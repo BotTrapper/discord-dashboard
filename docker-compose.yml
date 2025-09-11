@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   discord-dashboard:
+    # Lokales Build (Development)
     build: .
+    # Registry Image (Production) - auskommentiert
+    # image: ghcr.io/bottrapper/discord-bot-dashboard:latest
     container_name: discord-dashboard
     restart: unless-stopped
     ports:
