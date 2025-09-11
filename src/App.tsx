@@ -10,6 +10,7 @@ import GuildSelection from './pages/GuildSelection';
 import Dashboard from './pages/Dashboard';
 import Tickets from './pages/Tickets';
 import AutoResponses from './pages/AutoResponses';
+import Settings from './pages/Settings';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -51,7 +52,7 @@ function App() {
               <Route path="tickets" element={<Tickets />} />
               <Route path="autoresponses" element={<AutoResponses />} />
               <Route path="statistics" element={<div className="text-center py-12 text-gray-600 dark:text-gray-400">Statistics page coming soon...</div>} />
-              <Route path="settings" element={<div className="text-center py-12 text-gray-600 dark:text-gray-400">Settings page coming soon...</div>} />
+              <Route path="settings" element={<Settings />} />
             </Route>
 
             {/* Redirect root to guilds if authenticated, otherwise to login */}
