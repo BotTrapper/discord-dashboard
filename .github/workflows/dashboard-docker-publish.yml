@@ -3,13 +3,8 @@ name: Discord Dashboard - Build & Push
 on:
   push:
     branches: [ main ]
-    paths: 
-      - 'discord-dashboard/**'
-    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
-    paths: 
-      - 'discord-dashboard/**'
   workflow_dispatch:
 
 env:
