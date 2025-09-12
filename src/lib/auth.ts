@@ -6,6 +6,27 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.withCredentials = true;
 
+// Add response interceptor to handle 401 errors
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.log('🔒 Unauthorized - redirecting to login');
+      
+      // Clear any stored token
+      localStorage.removeItem('discord_token');
+      
+      // Don't redirect if we're already on login page to avoid infinite loops
+      if (!window.location.pathname.includes('/login')) {
+        // Use replace instead of href to avoid adding to history
+        window.location.replace('/login?error=unauthorized');
+        return Promise.reject(error); // Stop execution here
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export interface User {
   id: string;
   username: string;
@@ -101,14 +122,18 @@ class AuthService {
     if (token) {
       this.token = token;
       localStorage.setItem('discord_token', token);
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      console.log('Token found in URL and stored:', token.substring(0, 10) + '...');
+      // Clean URL but preserve the path
+      const url = new URL(window.location.href);
+      url.searchParams.delete('token');
+      window.history.replaceState({}, document.title, url.pathname + url.hash);
+      console.log('✅ Token found in URL and stored:', token.substring(0, 10) + '...');
     } else {
       // Check localStorage
       this.token = localStorage.getItem('discord_token');
       if (this.token) {
-        console.log('Token loaded from localStorage:', this.token.substring(0, 10) + '...');
+        console.log('✅ Token loaded from localStorage:', this.token.substring(0, 10) + '...');
+      } else {
+        console.log('⚠️ No token found in URL or localStorage');
       }
     }
   }
@@ -134,26 +159,43 @@ class AuthService {
     this.user = null;
     this.token = null;
     localStorage.removeItem('discord_token');
-    window.location.href = `${API_BASE_URL}/auth/logout`;
+    
+    // Only redirect to backend logout if not already on login page
+    if (!window.location.pathname.includes('/login')) {
+      window.location.href = `${API_BASE_URL}/auth/logout`;
+    }
   }
 
   async getCurrentUser(): Promise<User | null> {
     if (!this.token) {
-      console.warn('No token available for getCurrentUser');
+      console.warn('❌ No token available for getCurrentUser');
       return null;
     }
 
     try {
-      console.log('Fetching current user with token:', this.token.substring(0, 10) + '...');
+      console.log('🔄 Fetching current user with token:', this.token.substring(0, 10) + '...');
       const response = await axios.get('/auth/me', {
         headers: this.getAuthHeaders()
       });
       this.user = response.data;
-      console.log('Current user fetched successfully:', this.user?.username);
+      console.log('✅ Current user fetched successfully:', this.user?.username || 'No username');
+      console.log('👤 User data:', {
+        id: this.user?.id,
+        username: this.user?.username,
+        discriminator: this.user?.discriminator,
+        guilds: this.user?.guilds?.length || 0
+      });
       return this.user;
-    } catch (error) {
-      console.error('Failed to get current user:', error);
-      this.logout();
+    } catch (error: any) {
+      console.error('❌ Failed to get current user:', error);
+      
+      if (error.response?.status === 401) {
+        console.log('🚪 Token expired or invalid, logging out...');
+        this.logout();
+      } else {
+        console.log('🔄 Network or server error, keeping token for retry');
+      }
+      
       return null;
     }
   }

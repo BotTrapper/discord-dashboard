@@ -41,12 +41,27 @@ const Tickets: React.FC = () => {
     if (guildId) {
       loadData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guildId]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Helper function to safely parse JSON response
+      const parseJsonResponse = async (response: Response) => {
+        const text = await response.text();
+        if (!text) {
+          return [];
+        }
+        try {
+          return JSON.parse(text);
+        } catch {
+          console.warn('Failed to parse JSON response:', text);
+          return [];
+        }
+      };
 
       // Load ticket statistics using authService.apiRequest
       const [allTicketsResponse, openTicketsResponse, transcriptListResponse] = await Promise.all([
@@ -55,17 +70,17 @@ const Tickets: React.FC = () => {
         authService.apiRequest(`/api/tickets/${guildId}/transcripts`)
       ]);
 
-      const allTicketsData = await allTicketsResponse.json();
-      const openTicketsData = await openTicketsResponse.json();
-      const transcriptListData = await transcriptListResponse.json();
+      const allTicketsData = await parseJsonResponse(allTicketsResponse);
+      const openTicketsData = await parseJsonResponse(openTicketsResponse);
+      const transcriptListData = await parseJsonResponse(transcriptListResponse);
 
       setStats({
-        totalTickets: allTicketsData.length,
-        openTickets: openTicketsData.length,
-        closedTickets: allTicketsData.length - openTicketsData.length
+        totalTickets: Array.isArray(allTicketsData) ? allTicketsData.length : 0,
+        openTickets: Array.isArray(openTicketsData) ? openTicketsData.length : 0,
+        closedTickets: (Array.isArray(allTicketsData) ? allTicketsData.length : 0) - (Array.isArray(openTicketsData) ? openTicketsData.length : 0)
       });
 
-      setTranscripts(transcriptListData);
+      setTranscripts(Array.isArray(transcriptListData) ? transcriptListData : []);
     } catch (err) {
       console.error('Error loading tickets data:', err);
       setError('Fehler beim Laden der Ticket-Daten');
@@ -77,12 +92,32 @@ const Tickets: React.FC = () => {
   const openTranscript = async (ticketId: number) => {
     try {
       const response = await authService.apiRequest(`/api/tickets/${guildId}/transcript/${ticketId}`);
-      const transcriptData = await response.json();
+      
+      // Check if response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Safe JSON parsing
+      const text = await response.text();
+      if (!text) {
+        throw new Error('Leeres Transcript erhalten');
+      }
+
+      let transcriptData;
+      try {
+        transcriptData = JSON.parse(text);
+      } catch {
+        console.warn('Failed to parse transcript JSON:', text);
+        throw new Error('Ungültiges Transcript-Format erhalten');
+      }
+
       setSelectedTranscript(transcriptData);
       setIsModalOpen(true);
     } catch (err) {
       console.error('Error loading transcript:', err);
-      setError('Fehler beim Laden des Transcripts');
+      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler beim Laden des Transcripts';
+      setError(`Fehler beim Laden des Transcripts: ${errorMessage}`);
     }
   };
 

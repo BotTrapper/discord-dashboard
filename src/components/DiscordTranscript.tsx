@@ -67,7 +67,7 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
 
   try {
     transcriptData = JSON.parse(transcriptJson);
-  } catch (error) {
+  } catch {
     return (
       <div className="p-4 bg-red-50 dark:bg-red-900/50 rounded-lg">
         <p className="text-red-700 dark:text-red-300">Fehler beim Laden des Transcripts</p>
@@ -301,7 +301,7 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
 
       {/* Messages */}
       <div className="space-y-4">
-        {transcriptData.messages.map((message, index) => (
+        {transcriptData.messages.map((message) => (
           <div key={message.id} className="group hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded p-2 transition-colors">
             <div className="flex items-start space-x-3">
               {/* Avatar */}

@@ -2,6 +2,7 @@ import { Outlet, useLocation, Link, useParams } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { authService } from '../lib/auth';
 import { useState } from 'react';
+import Footer from './Footer';
 import {
   HomeIcon,
   TicketIcon,
@@ -14,6 +15,7 @@ import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -22,6 +24,7 @@ const navigation = [
   { name: 'Auto Responses', href: 'autoresponses', icon: ChatBubbleLeftRightIcon },
   { name: 'Statistics', href: 'statistics', icon: ChartBarIcon },
   { name: 'Berechtigungen', href: 'permissions', icon: KeyIcon },
+  { name: 'Changelog', href: 'changelog', icon: DocumentTextIcon },
   { name: 'Einstellungen', href: 'settings', icon: Cog6ToothIcon },
 ];
 
@@ -142,6 +145,11 @@ export default function DashboardLayout() {
               <ArrowRightOnRectangleIcon className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-3" />
               <span className="hidden sm:block">Logout</span>
             </button>
+
+            {/* Footer in Sidebar */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-2 sm:pt-4 mt-2 sm:mt-4">
+              <Footer />
+            </div>
           </div>
         </div>
       </div>

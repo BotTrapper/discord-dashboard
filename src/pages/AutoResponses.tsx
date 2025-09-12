@@ -208,6 +208,7 @@ export default function AutoResponses() {
     if (guildId) {
       loadAutoResponses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guildId]);
 
   const loadAutoResponses = async () => {

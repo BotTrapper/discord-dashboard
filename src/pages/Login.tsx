@@ -47,6 +47,10 @@ export default function Login() {
                   <div className="mt-2 text-sm text-red-700 dark:text-red-300">
                     {error === 'failed'
                       ? 'Discord authentication failed. Please try again.'
+                      : error === 'unauthorized'
+                      ? 'Your session has expired. Please sign in again.'
+                      : error === 'token_expired'
+                      ? 'Your login token has expired. Please sign in again.'
                       : 'An error occurred during login. Please try again.'}
                   </div>
                 </div>

@@ -5,16 +5,19 @@ import {
   ServerIcon,
   ArrowRightIcon,
   ExclamationTriangleIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 export default function GuildSelection() {
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadGuilds();
+    checkAdminStatus();
   }, []);
 
   const loadGuilds = async () => {
@@ -30,6 +33,17 @@ export default function GuildSelection() {
       console.error('Error loading guilds:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkAdminStatus = async () => {
+    try {
+      const response = await authService.apiRequest('/api/admin/status');
+      const data = await response.json();
+      setIsAdmin(data.isAdmin || false);
+    } catch (err) {
+      console.log('Not an admin or error checking status:', err);
+      setIsAdmin(false);
     }
   };
 
@@ -82,6 +96,28 @@ export default function GuildSelection() {
             Select a server to manage your bot settings
           </p>
         </div>
+
+        {/* Admin Panel Access */}
+        {isAdmin && (
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-center">
+              <div className="flex items-center justify-center mb-4">
+                <ShieldCheckIcon className="h-8 w-8 text-white mr-3" />
+                <h2 className="text-xl font-bold text-white">Global Administrator</h2>
+              </div>
+              <p className="text-red-100 mb-4">
+                Sie haben globale Admin-Berechtigung und können das Admin Control Panel verwenden.
+              </p>
+              <button
+                onClick={() => navigate('/admin')}
+                className="inline-flex items-center px-6 py-3 bg-white text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-colors shadow-lg"
+              >
+                <ShieldCheckIcon className="h-5 w-5 mr-2" />
+                Admin Control Panel öffnen
+              </button>
+            </div>
+          </div>
+        )}
 
         {guilds.length === 0 ? (
           <div className="text-center">

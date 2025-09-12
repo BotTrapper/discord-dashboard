@@ -12,6 +12,8 @@ import Tickets from './pages/Tickets';
 import AutoResponses from './pages/AutoResponses';
 import Settings from './pages/Settings';
 import Permissions from './pages/Permissions';
+import Changelog from './pages/Changelog';
+import AdminPanel from './pages/AdminPanel';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -29,6 +31,16 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+
+            {/* Admin Panel Route */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Protected Routes */}
             <Route
@@ -55,6 +67,7 @@ function App() {
               <Route path="statistics" element={<div className="text-center py-12 text-gray-600 dark:text-gray-400">Statistics page coming soon...</div>} />
               <Route path="settings" element={<Settings />} />
               <Route path="permissions" element={<Permissions />} />
+              <Route path="changelog" element={<Changelog />} />
             </Route>
 
             {/* Redirect root to guilds if authenticated, otherwise to login */}

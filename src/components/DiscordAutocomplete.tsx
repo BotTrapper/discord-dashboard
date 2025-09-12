@@ -50,6 +50,14 @@ export default function DiscordAutocomplete({
 
       if (type === 'role') {
         const roles = await authService.getGuildRoles(guildId);
+        console.log(`Loaded roles:`, roles);
+        
+        // Validate that roles is an array
+        if (!Array.isArray(roles)) {
+          console.error('Invalid roles data:', roles);
+          throw new Error('Server returned invalid roles data');
+        }
+        
         console.log(`Loaded ${roles.length} roles`);
         const roleOptions: AutocompleteOption[] = roles
           .filter(role => !role.managed && role.name !== '@everyone')
@@ -64,6 +72,14 @@ export default function DiscordAutocomplete({
         setOptions(roleOptions);
       } else {
         const members = await authService.getGuildMembers(guildId, query);
+        console.log(`Loaded members:`, members);
+        
+        // Validate that members is an array
+        if (!Array.isArray(members)) {
+          console.error('Invalid members data:', members);
+          throw new Error('Server returned invalid members data');
+        }
+        
         console.log(`Loaded ${members.length} members with query "${query}"`);
         const memberOptions: AutocompleteOption[] = members
           .map(member => ({

@@ -20,6 +20,11 @@ interface Permission {
   permissions: string[];
   createdAt: string;
   isOwner?: boolean;
+  // Extended properties from Discord API
+  avatar?: string;
+  discriminator?: string;
+  color?: number;
+  position?: number;
 }
 
 interface AddPermissionForm {
@@ -96,7 +101,7 @@ export default function Permissions() {
                 return { ...permission, targetName: role.name };
               }
             }
-          } catch (err) {
+          } catch {
             console.warn(`Could not refresh name for ${permission.type} ${permission.targetId}`);
           }
           return permission;
@@ -114,6 +119,7 @@ export default function Permissions() {
     if (permissions.length > 0) {
       refreshPermissionNames();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permissions.length]);
 
   const handleAddPermission = async () => {
@@ -468,9 +474,26 @@ export default function Permissions() {
                   <div className="flex items-start sm:items-center">
                     <div className="relative flex-shrink-0">
                       {permission.type === 'user' ? (
-                        <UserIcon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-0.5 sm:mt-0 ${permission.isOwner ? 'text-yellow-600' : 'text-blue-500'}`} />
+                        <div className="flex items-center">
+                          {permission.avatar ? (
+                            <img 
+                              src={permission.avatar} 
+                              alt={permission.targetName}
+                              className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full mr-2 sm:mr-3 ${permission.isOwner ? 'ring-2 ring-yellow-500' : ''}`}
+                            />
+                          ) : (
+                            <UserIcon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-0.5 sm:mt-0 ${permission.isOwner ? 'text-yellow-600' : 'text-blue-500'}`} />
+                          )}
+                        </div>
                       ) : (
-                        <UserGroupIcon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-0.5 sm:mt-0 ${permission.isOwner ? 'text-yellow-600' : 'text-green-500'}`} />
+                        <div className="flex items-center">
+                          <div 
+                            className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 rounded-full flex items-center justify-center ${permission.isOwner ? 'ring-2 ring-yellow-500' : ''}`}
+                            style={{ backgroundColor: permission.color ? `#${permission.color.toString(16).padStart(6, '0')}` : '#99AAB5' }}
+                          >
+                            <UserGroupIcon className={`h-3 w-3 sm:h-4 sm:w-4 ${permission.color && permission.color !== 0 ? 'text-white' : 'text-gray-600'}`} />
+                          </div>
+                        </div>
                       )}
                       {permission.isOwner && (
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -482,6 +505,13 @@ export default function Permissions() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                         <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
                           {permission.targetName}
+                          {permission.type === 'role' && permission.color && permission.color !== 0 && (
+                            <span 
+                              className="ml-2 inline-block w-2 h-2 sm:w-3 sm:h-3 rounded-full"
+                              style={{ backgroundColor: `#${permission.color.toString(16).padStart(6, '0')}` }}
+                              title="Rollenfarbe"
+                            />
+                          )}
                         </h4>
                         {permission.isOwner && (
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-full self-start">
@@ -489,12 +519,33 @@ export default function Permissions() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {permission.type === 'user' ? 'Benutzer' : 'Rolle'} • ID: {permission.targetId}
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        <span className="inline-flex items-center">
+                          {permission.type === 'user' ? (
+                            <>
+                              <UserIcon className="h-3 w-3 mr-1" />
+                              Benutzer
+                              {permission.discriminator && permission.discriminator !== '0' && (
+                                <span className="ml-1">#{permission.discriminator}</span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <UserGroupIcon className="h-3 w-3 mr-1" />
+                              Rolle
+                              {permission.position && (
+                                <span className="ml-1">• Pos. {permission.position}</span>
+                              )}
+                            </>
+                          )}
+                        </span>
+                        <span className="ml-2 font-mono bg-gray-100 dark:bg-gray-600 px-1.5 py-0.5 rounded text-xs">
+                          ID: {permission.targetId.substring(0, 10)}...
+                        </span>
                         {permission.isOwner && (
-                          <span className="ml-2 text-yellow-600 dark:text-yellow-400">• Automatische Berechtigung</span>
+                          <span className="ml-2 text-yellow-600 dark:text-yellow-400">• Auto-Berechtigung</span>
                         )}
-                      </p>
+                      </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {permission.permissions.map((perm) => {
                           const permInfo = availablePermissions.find(p => p.id === perm);
