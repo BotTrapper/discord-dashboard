@@ -228,18 +228,39 @@ class AuthService {
     return response.data;
   }
 
-  async getGuildMembers(guildId: string, query?: string): Promise<DiscordMember[]> {
+  async getGuildMembers(guildId: string, search?: string): Promise<DiscordMember[]> {
     if (!this.token) {
       throw new Error('No authentication token available');
     }
 
-    const params = query ? { search: query } : {};
-    const response = await axios.get(`/api/discord/${guildId}/members`, {
-      headers: this.getAuthHeaders(),
-      params
+    const url = `/api/discord/${guildId}/members${search ? `?search=${encodeURIComponent(search)}` : ''}`;
+    const response = await axios.get(url, {
+      headers: this.getAuthHeaders()
     });
     return response.data;
   }
+
+  // Generic API request method
+  async apiRequest(endpoint: string, options?: RequestInit): Promise<Response> {
+    if (!this.token) {
+      throw new Error('No authentication token available');
+    }
+
+    const url = `${API_BASE_URL}${endpoint}`;
+
+    const defaultOptions: RequestInit = {
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+      credentials: 'include',
+      ...options,
+    };
+
+    return fetch(url, defaultOptions);
+  }
 }
 
+// Export singleton instance
 export const authService = new AuthService();

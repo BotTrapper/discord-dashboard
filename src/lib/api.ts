@@ -1,21 +1,4 @@
-import axios from 'axios';
-
-// Configure axios
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-axios.defaults.withCredentials = true;
-
-export interface Ticket {
-  id: number;
-  user_id: string;
-  username: string;
-  reason: string;
-  status: string;
-  channel_id: string;
-  created_at: string;
-  closed_at?: string;
-  guild_id: string;
-}
-
+// Types - move to top level exports
 export interface AutoResponse {
   id: number;
   trigger_word: string;
@@ -28,80 +11,78 @@ export interface AutoResponse {
   created_at: string;
 }
 
-export interface Webhook {
-  id: number;
-  name: string;
-  url: string;
-  guild_id: string;
-  created_at: string;
-}
+import axios from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 
-export interface CommandStat {
-  command_name: string;
-  usage_count: number;
-}
-
-export interface Activity {
-  type: string;
-  description: string;
-  timestamp: string;
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 class ApiService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('discord_token');
-    return {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
-  }
+  private axiosInstance: AxiosInstance;
 
-  // Tickets API
-  async getTickets(guildId: string, status?: string): Promise<Ticket[]> {
-    const params = status ? { status } : {};
-    const response = await axios.get(`/api/tickets/${guildId}`, {
-      params,
-      headers: this.getAuthHeaders()
+  constructor() {
+    this.axiosInstance = axios.create({
+      baseURL: API_BASE_URL,
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-    return response.data;
+
+    // Request interceptor to add auth token
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Response interceptor for error handling
+    this.axiosInstance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
-  async createTicket(ticketData: {
-    userId: string;
-    username: string;
-    reason: string;
-    channelId: string;
-    guildId: string;
-  }): Promise<{ id: number; success: boolean }> {
-    const response = await axios.post('/api/tickets', ticketData, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
+  async get<T = any>(url: string): Promise<AxiosResponse<T>> {
+    return this.axiosInstance.get(url);
   }
 
-  async closeTicket(ticketId: number): Promise<{ success: boolean }> {
-    const response = await axios.patch(`/api/tickets/${ticketId}/close`, {}, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
+  async post<T = any>(url: string, data?: any): Promise<AxiosResponse<T>> {
+    return this.axiosInstance.post(url, data);
   }
 
-  async deleteTicket(ticketId: number): Promise<{ success: boolean }> {
-    const response = await axios.delete(`/api/tickets/${ticketId}`, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
+  async put<T = any>(url: string, data?: any): Promise<AxiosResponse<T>> {
+    return this.axiosInstance.put(url, data);
   }
 
-  // Auto Responses API
+  async patch<T = any>(url: string, data?: any): Promise<AxiosResponse<T>> {
+    return this.axiosInstance.patch(url, data);
+  }
+
+  async delete<T = any>(url: string): Promise<AxiosResponse<T>> {
+    return this.axiosInstance.delete(url);
+  }
+
+  // Auto Response specific methods
   async getAutoResponses(guildId: string): Promise<AutoResponse[]> {
-    const response = await axios.get(`/api/autoresponses/${guildId}`, {
-      headers: this.getAuthHeaders()
-    });
+    const response = await this.get<AutoResponse[]>(`/api/autoresponses/${guildId}`);
     return response.data;
   }
 
-  async createAutoResponse(responseData: {
+  async createAutoResponse(data: {
     trigger: string;
     response: string;
     isEmbed: boolean;
@@ -109,54 +90,13 @@ class ApiService {
     embedDescription?: string;
     embedColor?: number;
     guildId: string;
-  }): Promise<{ id: number; success: boolean }> {
-    const response = await axios.post('/api/autoresponses', responseData, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
+  }): Promise<void> {
+    await this.post(`/api/autoresponses/${data.guildId}`, data);
   }
 
-  async deleteAutoResponse(guildId: string, trigger: string): Promise<{ success: boolean }> {
-    const response = await axios.delete(`/api/autoresponses/${guildId}/${encodeURIComponent(trigger)}`, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
-  }
-
-  // Statistics API
-  async getCommandStats(guildId: string, days: number = 30): Promise<CommandStat[]> {
-    const response = await axios.get(`/api/stats/${guildId}`, {
-      params: { days },
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
-  }
-
-  // Webhooks API
-  async getWebhooks(guildId: string): Promise<Webhook[]> {
-    const response = await axios.get(`/api/webhooks/${guildId}`, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
-  }
-
-  async createWebhook(webhookData: {
-    name: string;
-    url: string;
-    guildId: string;
-  }): Promise<{ id: number; success: boolean }> {
-    const response = await axios.post('/api/webhooks', webhookData, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
-  }
-
-  async deleteWebhook(guildId: string, name: string): Promise<{ success: boolean }> {
-    const response = await axios.delete(`/api/webhooks/${guildId}/${encodeURIComponent(name)}`, {
-      headers: this.getAuthHeaders()
-    });
-    return response.data;
+  async deleteAutoResponse(guildId: string, trigger: string): Promise<void> {
+    await this.delete(`/api/autoresponses/${guildId}/${encodeURIComponent(trigger)}`);
   }
 }
 
-export const apiService = new ApiService();
+export const api = new ApiService();

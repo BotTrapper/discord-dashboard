@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiService, type AutoResponse } from '../lib/api';
+import { api, type AutoResponse } from '../lib/api';
 import {
   ChatBubbleLeftRightIcon,
   PlusIcon,
@@ -213,7 +213,7 @@ export default function AutoResponses() {
   const loadAutoResponses = async () => {
     try {
       setLoading(true);
-      const responseData = await apiService.getAutoResponses(guildId!);
+      const responseData = await api.getAutoResponses(guildId!);
       setResponses(responseData);
     } catch (err) {
       console.error('Error loading auto responses:', err);
@@ -225,7 +225,7 @@ export default function AutoResponses() {
 
   const handleCreateAutoResponse = async (data: any) => {
     try {
-      await apiService.createAutoResponse({
+      await api.createAutoResponse({
         ...data,
         guildId: guildId!,
         embedColor: data.embedColor ? parseInt(data.embedColor.replace('#', ''), 16) : undefined,
@@ -243,7 +243,7 @@ export default function AutoResponses() {
     }
 
     try {
-      await apiService.deleteAutoResponse(guildId!, trigger);
+      await api.deleteAutoResponse(guildId!, trigger);
       await loadAutoResponses();
     } catch (err) {
       console.error('Error deleting auto response:', err);

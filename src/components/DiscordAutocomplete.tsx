@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, CheckIcon, XMarkIcon, UserIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { authService } from '../lib/auth';
 
 interface AutocompleteOption {
@@ -185,7 +185,7 @@ export default function DiscordAutocomplete({
           onClick={handleInputClick}
           placeholder={placeholder || `${type === 'role' ? 'Rolle' : 'Benutzer'} auswählen...`}
           disabled={disabled}
-          className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+          className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base ${
             disabled 
               ? 'border-gray-200 dark:border-gray-600 cursor-not-allowed opacity-50' 
               : 'border-gray-300 dark:border-gray-600 cursor-pointer'
@@ -200,78 +200,68 @@ export default function DiscordAutocomplete({
               onClick={handleClear}
               className="mr-1 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              ×
+              <XMarkIcon className="h-4 w-4" />
             </button>
           )}
           <ChevronDownIcon
-            className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           />
         </div>
       </div>
 
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
 
+      {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 sm:max-h-60 overflow-auto">
           {loading ? (
-            <div className="px-3 py-2 text-center text-gray-500 dark:text-gray-400">
-              <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2"></div>
-              Wird geladen...
-            </div>
-          ) : error ? (
-            <div className="px-3 py-2 text-center text-red-500 dark:text-red-400">
-              {error}
+            <div className="p-3 text-center">
+              <div className="animate-spin h-4 w-4 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Laden...</p>
             </div>
           ) : options.length === 0 ? (
-            <div className="px-3 py-2 text-center text-gray-500 dark:text-gray-400">
-              {type === 'user' && searchQuery.length < 2
-                ? 'Gib mindestens 2 Zeichen ein...'
-                : type === 'user'
-                ? 'Keine Benutzer gefunden. Für kleine Server gib bitte Discord-ID und Name manuell ein.'
-                : `Keine ${type === 'role' ? 'Rollen' : 'Benutzer'} gefunden`}
+            <div className="p-3 text-center">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                {type === 'user' && searchQuery.length < 2
+                  ? 'Mindestens 2 Zeichen eingeben'
+                  : `Keine ${type === 'user' ? 'Benutzer' : 'Rollen'} gefunden`
+                }
+              </p>
             </div>
           ) : (
-            <div>
-              {options.map((option) => (
+            <div className="py-1">
+              {options.slice(0, 50).map((option) => (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => handleOptionSelect(option)}
-                  className={`w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between ${
-                    value?.id === option.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''
-                  }`}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 focus:outline-none flex items-center gap-2"
                 >
-                  <div className="flex items-center">
-                    {option.type === 'user' && option.avatar ? (
-                      <img
-                        src={`https://cdn.discordapp.com/avatars/${option.id}/${option.avatar}.png?size=32`}
-                        alt={option.name}
-                        className="w-6 h-6 rounded-full mr-3"
-                      />
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {option.type === 'user' ? (
+                      <UserIcon className="h-4 w-4 text-blue-500 flex-shrink-0" />
                     ) : (
-                      <div
-                        className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center text-xs font-bold text-white ${
-                          option.type === 'role' ? '' : 'bg-gray-400'
-                        }`}
-                        style={option.type === 'role' && option.color ?
-                          { backgroundColor: getRoleColor(option.color) } :
-                          undefined
-                        }
-                      >
-                        {option.type === 'role' ? '@' : option.name.charAt(0).toUpperCase()}
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <UserGroupIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <div
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: getRoleColor(option.color || 0) }}
+                        />
                       </div>
                     )}
-                    <div>
-                      <span className="text-gray-900 dark:text-white">{option.name}</span>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        ID: {option.id}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
+                        {option.name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {option.type === 'user' ? 'Benutzer' : 'Rolle'} • {option.id}
                       </p>
                     </div>
                   </div>
                   {value?.id === option.id && (
-                    <CheckIcon className="h-4 w-4 text-indigo-600" />
+                    <CheckIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                   )}
                 </button>
               ))}
