@@ -1,4 +1,4 @@
-import { getVersion } from '../lib/version';
+import { getVersion } from "../lib/version";
 
 export default function Footer() {
   const version = getVersion();
@@ -11,7 +11,9 @@ export default function Footer() {
         <div className="hidden sm:block">Version {version}</div>
         <div className="hidden sm:block">© {currentYear} Julscha</div>
         {/* Mobile: More compact display */}
-        <div className="sm:hidden">v{version} • © {currentYear} Julscha</div>
+        <div className="sm:hidden">
+          v{version} • © {currentYear} Julscha
+        </div>
       </div>
     </div>
   );

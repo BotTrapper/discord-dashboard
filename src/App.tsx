@@ -1,19 +1,24 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { authService } from './lib/auth';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { authService } from "./lib/auth";
 
 // Components
-import DashboardLayout from './components/DashboardLayout';
-import Login from './pages/Login';
-import GuildSelection from './pages/GuildSelection';
-import Dashboard from './pages/Dashboard';
-import Tickets from './pages/Tickets';
-import AutoResponses from './pages/AutoResponses';
-import Settings from './pages/Settings';
-import Permissions from './pages/Permissions';
-import Changelog from './pages/Changelog';
-import AdminPanel from './pages/AdminPanel';
+import DashboardLayout from "./components/DashboardLayout";
+import Login from "./pages/Login";
+import GuildSelection from "./pages/GuildSelection";
+import Dashboard from "./pages/Dashboard";
+import Tickets from "./pages/Tickets";
+import AutoResponses from "./pages/AutoResponses";
+import Settings from "./pages/Settings";
+import Permissions from "./pages/Permissions";
+import Changelog from "./pages/Changelog";
+import AdminPanel from "./pages/AdminPanel";
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -64,7 +69,14 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="tickets" element={<Tickets />} />
               <Route path="autoresponses" element={<AutoResponses />} />
-              <Route path="statistics" element={<div className="text-center py-12 text-gray-600 dark:text-gray-400">Statistics page coming soon...</div>} />
+              <Route
+                path="statistics"
+                element={
+                  <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+                    Statistics page coming soon...
+                  </div>
+                }
+              />
               <Route path="settings" element={<Settings />} />
               <Route path="permissions" element={<Permissions />} />
               <Route path="changelog" element={<Changelog />} />
@@ -74,9 +86,11 @@ function App() {
             <Route
               path="/"
               element={
-                authService.isAuthenticated()
-                  ? <Navigate to="/guilds" replace />
-                  : <Navigate to="/login" replace />
+                authService.isAuthenticated() ? (
+                  <Navigate to="/guilds" replace />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
               }
             />
 

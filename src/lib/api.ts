@@ -11,10 +11,10 @@ export interface AutoResponse {
   created_at: string;
 }
 
-import axios from 'axios';
-import type { AxiosInstance, AxiosResponse } from 'axios';
+import axios from "axios";
+import type { AxiosInstance, AxiosResponse } from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -24,14 +24,14 @@ class ApiService {
       baseURL: API_BASE_URL,
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     // Request interceptor to add auth token
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -39,7 +39,7 @@ class ApiService {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Response interceptor for error handling
@@ -48,11 +48,11 @@ class ApiService {
       (error) => {
         if (error.response?.status === 401) {
           // Token expired or invalid
-          localStorage.removeItem('token');
-          window.location.href = '/login';
+          localStorage.removeItem("token");
+          window.location.href = "/login";
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -78,7 +78,9 @@ class ApiService {
 
   // Auto Response specific methods
   async getAutoResponses(guildId: string): Promise<AutoResponse[]> {
-    const response = await this.get<AutoResponse[]>(`/api/autoresponses/${guildId}`);
+    const response = await this.get<AutoResponse[]>(
+      `/api/autoresponses/${guildId}`,
+    );
     return response.data;
   }
 
@@ -95,7 +97,9 @@ class ApiService {
   }
 
   async deleteAutoResponse(guildId: string, trigger: string): Promise<void> {
-    await this.delete(`/api/autoresponses/${guildId}/${encodeURIComponent(trigger)}`);
+    await this.delete(
+      `/api/autoresponses/${guildId}/${encodeURIComponent(trigger)}`,
+    );
   }
 }
 

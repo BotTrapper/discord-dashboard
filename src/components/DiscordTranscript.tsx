@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TranscriptMessage {
   id: string;
@@ -62,7 +62,9 @@ interface DiscordTranscriptProps {
   transcriptJson: string;
 }
 
-const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson }) => {
+const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({
+  transcriptJson,
+}) => {
   let transcriptData: TranscriptData;
 
   try {
@@ -70,12 +72,14 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
   } catch {
     return (
       <div className="p-4 bg-red-50 dark:bg-red-900/50 rounded-lg">
-        <p className="text-red-700 dark:text-red-300">Fehler beim Laden des Transcripts</p>
+        <p className="text-red-700 dark:text-red-300">
+          Fehler beim Laden des Transcripts
+        </p>
       </div>
     );
   }
 
-  const getAvatarUrl = (author: TranscriptMessage['author']) => {
+  const getAvatarUrl = (author: TranscriptMessage["author"]) => {
     if (author.avatar) {
       return `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}.webp?size=40`;
     }
@@ -90,9 +94,9 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    const timeStr = date.toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit'
+    const timeStr = date.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     if (date.toDateString() === today.toDateString()) {
@@ -100,16 +104,23 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
     } else if (date.toDateString() === yesterday.toDateString()) {
       return `Gestern um ${timeStr}`;
     } else {
-      return date.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }) + ` um ${timeStr}`;
+      return (
+        date.toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) + ` um ${timeStr}`
+      );
     }
   };
 
-  const renderEmbed = (embed: TranscriptMessage['embeds'][0], index: number) => {
-    const borderColor = embed.color ? `#${embed.color.toString(16).padStart(6, '0')}` : '#202225';
+  const renderEmbed = (
+    embed: TranscriptMessage["embeds"][0],
+    index: number,
+  ) => {
+    const borderColor = embed.color
+      ? `#${embed.color.toString(16).padStart(6, "0")}`
+      : "#202225";
 
     return (
       <div key={index} className="max-w-lg mt-2">
@@ -164,7 +175,10 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
           {embed.fields && embed.fields.length > 0 && (
             <div className="grid gap-2 mb-3">
               {embed.fields.map((field, fieldIndex) => (
-                <div key={fieldIndex} className={field.inline ? "inline-block mr-4" : "block"}>
+                <div
+                  key={fieldIndex}
+                  className={field.inline ? "inline-block mr-4" : "block"}
+                >
                   <div className="font-semibold text-sm text-gray-800 dark:text-gray-200 mb-1">
                     {field.name}
                   </div>
@@ -194,7 +208,7 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
                 src={embed.image.url}
                 alt=""
                 className="max-w-full rounded cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => window.open(embed.image!.url, '_blank')}
+                onClick={() => window.open(embed.image!.url, "_blank")}
               />
             </div>
           )}
@@ -210,7 +224,9 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
                 />
               )}
               {embed.footer?.text && <span>{embed.footer.text}</span>}
-              {embed.footer?.text && embed.timestamp && <span className="mx-1">•</span>}
+              {embed.footer?.text && embed.timestamp && (
+                <span className="mx-1">•</span>
+              )}
               {embed.timestamp && (
                 <span>{formatTimestamp(embed.timestamp)}</span>
               )}
@@ -221,9 +237,12 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
     );
   };
 
-  const renderAttachment = (attachment: TranscriptMessage['attachments'][0], index: number) => {
-    const isImage = attachment.contentType?.startsWith('image/');
-    const isVideo = attachment.contentType?.startsWith('video/');
+  const renderAttachment = (
+    attachment: TranscriptMessage["attachments"][0],
+    index: number,
+  ) => {
+    const isImage = attachment.contentType?.startsWith("image/");
+    const isVideo = attachment.contentType?.startsWith("video/");
 
     return (
       <div key={index} className="mt-2">
@@ -233,7 +252,7 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
               src={attachment.proxyUrl || attachment.url}
               alt={attachment.name}
               className="max-w-md max-h-80 rounded cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => window.open(attachment.url, '_blank')}
+              onClick={() => window.open(attachment.url, "_blank")}
             />
             <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
               {attachment.name}
@@ -256,8 +275,16 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
             rel="noopener noreferrer"
             className="inline-flex items-center px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
-            <svg className="w-5 h-5 mr-2 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 mr-2 text-gray-600 dark:text-gray-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
             </svg>
             <div>
               <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
@@ -295,14 +322,20 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
         </div>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           <p>{transcriptData.header.guildName}</p>
-          <p>{transcriptData.header.totalMessages} Nachrichten • Generiert: {formatTimestamp(transcriptData.header.generated)}</p>
+          <p>
+            {transcriptData.header.totalMessages} Nachrichten • Generiert:{" "}
+            {formatTimestamp(transcriptData.header.generated)}
+          </p>
         </div>
       </div>
 
       {/* Messages */}
       <div className="space-y-4">
         {transcriptData.messages.map((message) => (
-          <div key={message.id} className="group hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded p-2 transition-colors">
+          <div
+            key={message.id}
+            className="group hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded p-2 transition-colors"
+          >
             <div className="flex items-start space-x-3">
               {/* Avatar */}
               <div className="flex-shrink-0">
@@ -365,7 +398,10 @@ const DiscordTranscript: React.FC<DiscordTranscriptProps> = ({ transcriptJson })
                 {message.reactions.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {message.reactions.map((reaction, reactionIndex) => (
-                      <div key={reactionIndex} className="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-1">
+                      <div
+                        key={reactionIndex}
+                        className="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-1"
+                      >
                         <span className="text-sm mr-1">
                           {reaction.emoji.name}
                         </span>

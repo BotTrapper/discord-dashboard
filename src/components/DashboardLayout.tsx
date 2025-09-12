@@ -1,8 +1,8 @@
-import { Outlet, useLocation, Link, useParams } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { authService } from '../lib/auth';
-import { useState } from 'react';
-import Footer from './Footer';
+import { Outlet, useLocation, Link, useParams } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
+import { authService } from "../lib/auth";
+import { useState } from "react";
+import Footer from "./Footer";
 import {
   HomeIcon,
   TicketIcon,
@@ -16,16 +16,20 @@ import {
   Bars3Icon,
   XMarkIcon,
   DocumentTextIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 const navigation = [
-  { name: 'Dashboard', href: '', icon: HomeIcon },
-  { name: 'Tickets', href: 'tickets', icon: TicketIcon },
-  { name: 'Auto Responses', href: 'autoresponses', icon: ChatBubbleLeftRightIcon },
-  { name: 'Statistics', href: 'statistics', icon: ChartBarIcon },
-  { name: 'Berechtigungen', href: 'permissions', icon: KeyIcon },
-  { name: 'Changelog', href: 'changelog', icon: DocumentTextIcon },
-  { name: 'Einstellungen', href: 'settings', icon: Cog6ToothIcon },
+  { name: "Dashboard", href: "", icon: HomeIcon },
+  { name: "Tickets", href: "tickets", icon: TicketIcon },
+  {
+    name: "Auto Responses",
+    href: "autoresponses",
+    icon: ChatBubbleLeftRightIcon,
+  },
+  { name: "Statistics", href: "statistics", icon: ChartBarIcon },
+  { name: "Berechtigungen", href: "permissions", icon: KeyIcon },
+  { name: "Changelog", href: "changelog", icon: DocumentTextIcon },
+  { name: "Einstellungen", href: "settings", icon: Cog6ToothIcon },
 ];
 
 export default function DashboardLayout() {
@@ -35,7 +39,7 @@ export default function DashboardLayout() {
   const user = authService.getUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const currentPath = location.pathname.split('/').pop() || '';
+  const currentPath = location.pathname.split("/").pop() || "";
 
   const handleLogout = () => {
     authService.logout();
@@ -44,20 +48,31 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mobile menu overlay */}
-      <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setSidebarOpen(false)} />
+      <div
+        className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? "block" : "hidden"}`}
+      >
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50"
+          onClick={() => setSidebarOpen(false)}
+        />
       </div>
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-16 sm:w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-16 sm:w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-12 sm:h-16 shrink-0 items-center justify-center sm:justify-start px-2 sm:px-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-lg bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center">
-                  <img src={"/logo.png"} alt={"Logo"} className="h-6 w-6 sm:h-8 sm:w-8 rounded-lg" />
+                <img
+                  src={"/logo.png"}
+                  alt={"Logo"}
+                  className="h-6 w-6 sm:h-8 sm:w-8 rounded-lg"
+                />
               </div>
               <span className="hidden sm:block ml-2 text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 BotTrapper
@@ -83,16 +98,16 @@ export default function DashboardLayout() {
                   onClick={() => setSidebarOpen(false)}
                   className={`group flex items-center justify-center sm:justify-start px-2 sm:px-3 py-2 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      ? "bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   }`}
                   title={item.name}
                 >
                   <item.icon
                     className={`h-4 w-4 sm:h-5 sm:w-5 ${
                       isActive
-                        ? 'text-indigo-600 dark:text-indigo-400'
-                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                     } sm:mr-3`}
                   />
                   <span className="hidden sm:block">{item.name}</span>
@@ -107,7 +122,7 @@ export default function DashboardLayout() {
             <button
               onClick={toggleTheme}
               className="w-full flex items-center justify-center sm:justify-start px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
-              title={isDark ? 'Light Mode' : 'Dark Mode'}
+              title={isDark ? "Light Mode" : "Dark Mode"}
             >
               {isDark ? (
                 <SunIcon className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-3" />
@@ -115,7 +130,7 @@ export default function DashboardLayout() {
                 <MoonIcon className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-3" />
               )}
               <span className="hidden sm:block">
-                {isDark ? 'Light Mode' : 'Dark Mode'}
+                {isDark ? "Light Mode" : "Dark Mode"}
               </span>
             </button>
 

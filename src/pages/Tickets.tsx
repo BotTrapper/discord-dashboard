@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { authService } from '../lib/auth';
-import DiscordTranscript from '../components/DiscordTranscript';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { authService } from "../lib/auth";
+import DiscordTranscript from "../components/DiscordTranscript";
 
 interface TicketStats {
   totalTickets: number;
@@ -32,7 +32,8 @@ const Tickets: React.FC = () => {
   const { guildId } = useParams<{ guildId: string }>();
   const [stats, setStats] = useState<TicketStats | null>(null);
   const [transcripts, setTranscripts] = useState<TicketTranscript[]>([]);
-  const [selectedTranscript, setSelectedTranscript] = useState<TranscriptDetail | null>(null);
+  const [selectedTranscript, setSelectedTranscript] =
+    useState<TranscriptDetail | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,32 +59,41 @@ const Tickets: React.FC = () => {
         try {
           return JSON.parse(text);
         } catch {
-          console.warn('Failed to parse JSON response:', text);
+          console.warn("Failed to parse JSON response:", text);
           return [];
         }
       };
 
       // Load ticket statistics using authService.apiRequest
-      const [allTicketsResponse, openTicketsResponse, transcriptListResponse] = await Promise.all([
-        authService.apiRequest(`/api/tickets/${guildId}`),
-        authService.apiRequest(`/api/tickets/${guildId}?status=open`),
-        authService.apiRequest(`/api/tickets/${guildId}/transcripts`)
-      ]);
+      const [allTicketsResponse, openTicketsResponse, transcriptListResponse] =
+        await Promise.all([
+          authService.apiRequest(`/api/tickets/${guildId}`),
+          authService.apiRequest(`/api/tickets/${guildId}?status=open`),
+          authService.apiRequest(`/api/tickets/${guildId}/transcripts`),
+        ]);
 
       const allTicketsData = await parseJsonResponse(allTicketsResponse);
       const openTicketsData = await parseJsonResponse(openTicketsResponse);
-      const transcriptListData = await parseJsonResponse(transcriptListResponse);
+      const transcriptListData = await parseJsonResponse(
+        transcriptListResponse,
+      );
 
       setStats({
         totalTickets: Array.isArray(allTicketsData) ? allTicketsData.length : 0,
-        openTickets: Array.isArray(openTicketsData) ? openTicketsData.length : 0,
-        closedTickets: (Array.isArray(allTicketsData) ? allTicketsData.length : 0) - (Array.isArray(openTicketsData) ? openTicketsData.length : 0)
+        openTickets: Array.isArray(openTicketsData)
+          ? openTicketsData.length
+          : 0,
+        closedTickets:
+          (Array.isArray(allTicketsData) ? allTicketsData.length : 0) -
+          (Array.isArray(openTicketsData) ? openTicketsData.length : 0),
       });
 
-      setTranscripts(Array.isArray(transcriptListData) ? transcriptListData : []);
+      setTranscripts(
+        Array.isArray(transcriptListData) ? transcriptListData : [],
+      );
     } catch (err) {
-      console.error('Error loading tickets data:', err);
-      setError('Fehler beim Laden der Ticket-Daten');
+      console.error("Error loading tickets data:", err);
+      setError("Fehler beim Laden der Ticket-Daten");
     } finally {
       setLoading(false);
     }
@@ -91,8 +101,10 @@ const Tickets: React.FC = () => {
 
   const openTranscript = async (ticketId: number) => {
     try {
-      const response = await authService.apiRequest(`/api/tickets/${guildId}/transcript/${ticketId}`);
-      
+      const response = await authService.apiRequest(
+        `/api/tickets/${guildId}/transcript/${ticketId}`,
+      );
+
       // Check if response is ok
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -101,22 +113,25 @@ const Tickets: React.FC = () => {
       // Safe JSON parsing
       const text = await response.text();
       if (!text) {
-        throw new Error('Leeres Transcript erhalten');
+        throw new Error("Leeres Transcript erhalten");
       }
 
       let transcriptData;
       try {
         transcriptData = JSON.parse(text);
       } catch {
-        console.warn('Failed to parse transcript JSON:', text);
-        throw new Error('Ungültiges Transcript-Format erhalten');
+        console.warn("Failed to parse transcript JSON:", text);
+        throw new Error("Ungültiges Transcript-Format erhalten");
       }
 
       setSelectedTranscript(transcriptData);
       setIsModalOpen(true);
     } catch (err) {
-      console.error('Error loading transcript:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler beim Laden des Transcripts';
+      console.error("Error loading transcript:", err);
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unbekannter Fehler beim Laden des Transcripts";
       setError(`Fehler beim Laden des Transcripts: ${errorMessage}`);
     }
   };
@@ -127,12 +142,12 @@ const Tickets: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('de-DE', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("de-DE", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -171,8 +186,18 @@ const Tickets: React.FC = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -193,8 +218,18 @@ const Tickets: React.FC = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -215,8 +250,18 @@ const Tickets: React.FC = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-gray-500 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -244,8 +289,18 @@ const Tickets: React.FC = () => {
 
             {transcripts.length === 0 ? (
               <div className="text-center py-8">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                   Keine Transcripte verfügbar
@@ -259,29 +314,50 @@ const Tickets: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Ticket ID
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Benutzer
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Grund
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Erstellt
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Geschlossen
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Aktionen
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {transcripts.map((transcript) => (
-                      <tr key={transcript.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <tr
+                        key={transcript.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                           #{transcript.id}
                         </td>
@@ -295,7 +371,9 @@ const Tickets: React.FC = () => {
                           {formatDate(transcript.created_at)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                          {transcript.closed_at ? formatDate(transcript.closed_at) : '-'}
+                          {transcript.closed_at
+                            ? formatDate(transcript.closed_at)
+                            : "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
@@ -318,11 +396,22 @@ const Tickets: React.FC = () => {
         {isModalOpen && selectedTranscript && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={closeModal}></div>
+              <div
+                className="fixed inset-0 transition-opacity"
+                aria-hidden="true"
+              >
+                <div
+                  className="absolute inset-0 bg-gray-500 opacity-75"
+                  onClick={closeModal}
+                ></div>
               </div>
 
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+              <span
+                className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                aria-hidden="true"
+              >
+                &#8203;
+              </span>
 
               <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -333,35 +422,63 @@ const Tickets: React.FC = () => {
                     onClick={closeModal}
                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
 
                 <div className="mb-4 grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Benutzer:</span>
-                    <p className="text-sm text-gray-900 dark:text-white">{selectedTranscript.username}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Grund:</span>
-                    <p className="text-sm text-gray-900 dark:text-white">{selectedTranscript.reason}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Erstellt:</span>
-                    <p className="text-sm text-gray-900 dark:text-white">{formatDate(selectedTranscript.created_at)}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Geschlossen:</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Benutzer:
+                    </span>
                     <p className="text-sm text-gray-900 dark:text-white">
-                      {selectedTranscript.closed_at ? formatDate(selectedTranscript.closed_at) : '-'}
+                      {selectedTranscript.username}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Grund:
+                    </span>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {selectedTranscript.reason}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Erstellt:
+                    </span>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {formatDate(selectedTranscript.created_at)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Geschlossen:
+                    </span>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {selectedTranscript.closed_at
+                        ? formatDate(selectedTranscript.closed_at)
+                        : "-"}
                     </p>
                   </div>
                 </div>
 
                 <div className="max-h-96 overflow-y-auto">
-                  <DiscordTranscript transcriptJson={selectedTranscript.transcript || '{}'} />
+                  <DiscordTranscript
+                    transcriptJson={selectedTranscript.transcript || "{}"}
+                  />
                 </div>
 
                 <div className="mt-6 flex justify-end space-x-3">

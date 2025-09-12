@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { authService } from '../lib/auth';
+import { useEffect, useState } from "react";
+import { authService } from "../lib/auth";
 import {
   CogIcon,
   UserGroupIcon,
@@ -9,8 +9,8 @@ import {
   TrashIcon,
   ShieldCheckIcon,
   ClockIcon,
-  ServerStackIcon
-} from '@heroicons/react/24/outline';
+  ServerStackIcon,
+} from "@heroicons/react/24/outline";
 
 interface GlobalSetting {
   id: number;
@@ -56,21 +56,30 @@ interface GuildInfo {
 }
 
 export default function AdminPanel() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Data states
   const [settings, setSettings] = useState<GlobalSetting[]>([]);
   const [admins, setAdmins] = useState<GlobalAdmin[]>([]);
   const [activities, setActivities] = useState<AdminActivity[]>([]);
   const [guilds, setGuilds] = useState<GuildInfo[]>([]);
-  
+
   // Form states
   const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [showAddSetting, setShowAddSetting] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ userId: '', username: '', level: 1 });
-  const [newSetting, setNewSetting] = useState({ key: '', value: '', type: 'string', description: '' });
+  const [newAdmin, setNewAdmin] = useState({
+    userId: "",
+    username: "",
+    level: 1,
+  });
+  const [newSetting, setNewSetting] = useState({
+    key: "",
+    value: "",
+    type: "string",
+    description: "",
+  });
 
   useEffect(() => {
     loadData();
@@ -82,37 +91,38 @@ export default function AdminPanel() {
       setError(null);
 
       // Check if user is admin first
-      const adminStatus = await authService.apiRequest('/api/admin/status');
+      const adminStatus = await authService.apiRequest("/api/admin/status");
       const adminData = await adminStatus.json();
-      
+
       if (!adminData.isAdmin) {
-        setError('Sie haben keine Admin-Berechtigung für dieses Panel.');
+        setError("Sie haben keine Admin-Berechtigung für dieses Panel.");
         return;
       }
 
       // Load all admin data
-      const [settingsRes, adminsRes, activitiesRes, guildsRes] = await Promise.all([
-        authService.apiRequest('/api/admin/settings'),
-        authService.apiRequest('/api/admin/admins'),
-        authService.apiRequest('/api/admin/activity?limit=20'),
-        authService.apiRequest('/api/admin/guilds')
-      ]);
+      const [settingsRes, adminsRes, activitiesRes, guildsRes] =
+        await Promise.all([
+          authService.apiRequest("/api/admin/settings"),
+          authService.apiRequest("/api/admin/admins"),
+          authService.apiRequest("/api/admin/activity?limit=20"),
+          authService.apiRequest("/api/admin/guilds"),
+        ]);
 
-      const [settingsData, adminsData, activitiesData, guildsData] = await Promise.all([
-        settingsRes.json(),
-        adminsRes.json(),
-        activitiesRes.json(),
-        guildsRes.json()
-      ]);
+      const [settingsData, adminsData, activitiesData, guildsData] =
+        await Promise.all([
+          settingsRes.json(),
+          adminsRes.json(),
+          activitiesRes.json(),
+          guildsRes.json(),
+        ]);
 
       setSettings(Array.isArray(settingsData) ? settingsData : []);
       setAdmins(Array.isArray(adminsData) ? adminsData : []);
       setActivities(Array.isArray(activitiesData) ? activitiesData : []);
       setGuilds(Array.isArray(guildsData) ? guildsData : []);
-
     } catch (err) {
-      console.error('Error loading admin data:', err);
-      setError('Fehler beim Laden der Admin-Daten');
+      console.error("Error loading admin data:", err);
+      setError("Fehler beim Laden der Admin-Daten");
     } finally {
       setLoading(false);
     }
@@ -121,87 +131,93 @@ export default function AdminPanel() {
   const addAdmin = async () => {
     try {
       if (!newAdmin.userId || !newAdmin.username) {
-        setError('Benutzer-ID und Username sind erforderlich');
+        setError("Benutzer-ID und Username sind erforderlich");
         return;
       }
 
-      const response = await authService.apiRequest('/api/admin/admins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAdmin)
+      const response = await authService.apiRequest("/api/admin/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAdmin),
       });
 
       if (response.ok) {
-        setNewAdmin({ userId: '', username: '', level: 1 });
+        setNewAdmin({ userId: "", username: "", level: 1 });
         setShowAddAdmin(false);
         loadData();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Fehler beim Hinzufügen des Admins');
+        setError(errorData.error || "Fehler beim Hinzufügen des Admins");
       }
     } catch (err) {
-      console.error('Error adding admin:', err);
-      setError('Fehler beim Hinzufügen des Admins');
+      console.error("Error adding admin:", err);
+      setError("Fehler beim Hinzufügen des Admins");
     }
   };
 
   const removeAdmin = async (userId: string) => {
     try {
-      if (!confirm('Admin wirklich entfernen?')) return;
+      if (!confirm("Admin wirklich entfernen?")) return;
 
-      const response = await authService.apiRequest(`/api/admin/admins/${userId}`, {
-        method: 'DELETE'
-      });
+      const response = await authService.apiRequest(
+        `/api/admin/admins/${userId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
         loadData();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Fehler beim Entfernen des Admins');
+        setError(errorData.error || "Fehler beim Entfernen des Admins");
       }
     } catch (err) {
-      console.error('Error removing admin:', err);
-      setError('Fehler beim Entfernen des Admins');
+      console.error("Error removing admin:", err);
+      setError("Fehler beim Entfernen des Admins");
     }
   };
 
   const addSetting = async () => {
     try {
       if (!newSetting.key || !newSetting.value) {
-        setError('Schlüssel und Wert sind erforderlich');
+        setError("Schlüssel und Wert sind erforderlich");
         return;
       }
 
-      const response = await authService.apiRequest(`/api/admin/settings/${encodeURIComponent(newSetting.key)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          value: newSetting.value,
-          type: newSetting.type,
-          description: newSetting.description
-        })
-      });
+      const response = await authService.apiRequest(
+        `/api/admin/settings/${encodeURIComponent(newSetting.key)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            value: newSetting.value,
+            type: newSetting.type,
+            description: newSetting.description,
+          }),
+        },
+      );
 
       if (response.ok) {
-        setNewSetting({ key: '', value: '', type: 'string', description: '' });
+        setNewSetting({ key: "", value: "", type: "string", description: "" });
         setShowAddSetting(false);
         loadData();
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Fehler beim Hinzufügen der Einstellung');
+        setError(errorData.error || "Fehler beim Hinzufügen der Einstellung");
       }
     } catch (err) {
-      console.error('Error adding setting:', err);
-      setError('Fehler beim Hinzufügen der Einstellung');
+      console.error("Error adding setting:", err);
+      setError("Fehler beim Hinzufügen der Einstellung");
     }
   };
 
   const tabs = [
-    { id: 'overview', name: 'Übersicht', icon: ChartBarIcon },
-    { id: 'settings', name: 'Einstellungen', icon: CogIcon },
-    { id: 'admins', name: 'Admins', icon: UserGroupIcon },
-    { id: 'guilds', name: 'Server', icon: ServerStackIcon },
-    { id: 'activity', name: 'Aktivitäten', icon: ClockIcon }
+    { id: "overview", name: "Übersicht", icon: ChartBarIcon },
+    { id: "settings", name: "Einstellungen", icon: CogIcon },
+    { id: "admins", name: "Admins", icon: UserGroupIcon },
+    { id: "guilds", name: "Server", icon: ServerStackIcon },
+    { id: "activity", name: "Aktivitäten", icon: ClockIcon },
   ];
 
   if (loading) {
@@ -238,8 +254,12 @@ export default function AdminPanel() {
             <div className="flex">
               <ExclamationTriangleIcon className="h-5 w-5 text-red-400 flex-shrink-0" />
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800 dark:text-red-400">Fehler</h3>
-                <p className="mt-1 text-sm text-red-700 dark:text-red-300">{error}</p>
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-400">
+                  Fehler
+                </h3>
+                <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                  {error}
+                </p>
               </div>
               <button
                 onClick={() => setError(null)}
@@ -262,8 +282,8 @@ export default function AdminPanel() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === tab.id
-                      ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                      ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
                   }`}
                 >
                   <IconComponent className="w-5 h-5" />
@@ -277,7 +297,7 @@ export default function AdminPanel() {
         {/* Tab Content */}
         <div className="space-y-6">
           {/* Overview Tab */}
-          {activeTab === 'overview' && (
+          {activeTab === "overview" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center">
@@ -285,8 +305,12 @@ export default function AdminPanel() {
                     <ServerStackIcon className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Server</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{guilds.length}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Server
+                    </p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      {guilds.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -297,8 +321,12 @@ export default function AdminPanel() {
                     <UserGroupIcon className="h-8 w-8 text-green-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Admins</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{admins.length}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Admins
+                    </p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      {admins.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -309,8 +337,12 @@ export default function AdminPanel() {
                     <CogIcon className="h-8 w-8 text-purple-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Einstellungen</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{settings.length}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Einstellungen
+                    </p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      {settings.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -321,8 +353,12 @@ export default function AdminPanel() {
                     <ClockIcon className="h-8 w-8 text-orange-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Letzte Aktivitäten</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{activities.length}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Letzte Aktivitäten
+                    </p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                      {activities.length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -330,10 +366,12 @@ export default function AdminPanel() {
           )}
 
           {/* Settings Tab */}
-          {activeTab === 'settings' && (
+          {activeTab === "settings" && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Globale Einstellungen</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Globale Einstellungen
+                </h2>
                 <button
                   onClick={() => setShowAddSetting(true)}
                   className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -345,7 +383,9 @@ export default function AdminPanel() {
 
               {showAddSetting && (
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Neue Einstellung</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    Neue Einstellung
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -354,7 +394,9 @@ export default function AdminPanel() {
                       <input
                         type="text"
                         value={newSetting.key}
-                        onChange={(e) => setNewSetting({ ...newSetting, key: e.target.value })}
+                        onChange={(e) =>
+                          setNewSetting({ ...newSetting, key: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="z.B. maintenance_mode"
                       />
@@ -366,7 +408,12 @@ export default function AdminPanel() {
                       <input
                         type="text"
                         value={newSetting.value}
-                        onChange={(e) => setNewSetting({ ...newSetting, value: e.target.value })}
+                        onChange={(e) =>
+                          setNewSetting({
+                            ...newSetting,
+                            value: e.target.value,
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="z.B. false"
                       />
@@ -377,7 +424,9 @@ export default function AdminPanel() {
                       </label>
                       <select
                         value={newSetting.type}
-                        onChange={(e) => setNewSetting({ ...newSetting, type: e.target.value })}
+                        onChange={(e) =>
+                          setNewSetting({ ...newSetting, type: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value="string">String</option>
@@ -393,7 +442,12 @@ export default function AdminPanel() {
                       <input
                         type="text"
                         value={newSetting.description}
-                        onChange={(e) => setNewSetting({ ...newSetting, description: e.target.value })}
+                        onChange={(e) =>
+                          setNewSetting({
+                            ...newSetting,
+                            description: e.target.value,
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Beschreibung der Einstellung"
                       />
@@ -455,10 +509,12 @@ export default function AdminPanel() {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                            {setting.description || '-'}
+                            {setting.description || "-"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(setting.updated_at).toLocaleDateString('de-DE')}
+                            {new Date(setting.updated_at).toLocaleDateString(
+                              "de-DE",
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -470,10 +526,12 @@ export default function AdminPanel() {
           )}
 
           {/* Admins Tab */}
-          {activeTab === 'admins' && (
+          {activeTab === "admins" && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Globale Administratoren</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Globale Administratoren
+                </h2>
                 <button
                   onClick={() => setShowAddAdmin(true)}
                   className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -485,7 +543,9 @@ export default function AdminPanel() {
 
               {showAddAdmin && (
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Neuen Admin hinzufügen</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                    Neuen Admin hinzufügen
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -494,7 +554,9 @@ export default function AdminPanel() {
                       <input
                         type="text"
                         value={newAdmin.userId}
-                        onChange={(e) => setNewAdmin({ ...newAdmin, userId: e.target.value })}
+                        onChange={(e) =>
+                          setNewAdmin({ ...newAdmin, userId: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Discord User ID"
                       />
@@ -506,7 +568,9 @@ export default function AdminPanel() {
                       <input
                         type="text"
                         value={newAdmin.username}
-                        onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })}
+                        onChange={(e) =>
+                          setNewAdmin({ ...newAdmin, username: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Username"
                       />
@@ -517,7 +581,12 @@ export default function AdminPanel() {
                       </label>
                       <select
                         value={newAdmin.level}
-                        onChange={(e) => setNewAdmin({ ...newAdmin, level: parseInt(e.target.value) })}
+                        onChange={(e) =>
+                          setNewAdmin({
+                            ...newAdmin,
+                            level: parseInt(e.target.value),
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value={1}>Level 1 - Standard Admin</option>
@@ -582,19 +651,25 @@ export default function AdminPanel() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              admin.level === 3 ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                              admin.level === 2 ? 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200' :
-                              'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                            }`}>
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                admin.level === 3
+                                  ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                                  : admin.level === 2
+                                    ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
+                                    : "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                              }`}
+                            >
                               Level {admin.level}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {admin.granted_by || 'System'}
+                            {admin.granted_by || "System"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(admin.granted_at).toLocaleDateString('de-DE')}
+                            {new Date(admin.granted_at).toLocaleDateString(
+                              "de-DE",
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <button
@@ -615,7 +690,7 @@ export default function AdminPanel() {
           )}
 
           {/* Guilds Tab */}
-          {activeTab === 'guilds' && (
+          {activeTab === "guilds" && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -625,14 +700,17 @@ export default function AdminPanel() {
                   <span>Sortiert nach Mitgliederanzahl</span>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {guilds.map((guild) => (
-                  <div key={guild.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+                  <div
+                    key={guild.id}
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow"
+                  >
                     <div className="flex items-start space-x-4">
                       {guild.icon ? (
-                        <img 
-                          src={guild.icon} 
+                        <img
+                          src={guild.icon}
                           alt={guild.name}
                           className="h-16 w-16 rounded-xl flex-shrink-0"
                         />
@@ -656,7 +734,7 @@ export default function AdminPanel() {
                               </span>
                             </div>
                           </div>
-                          
+
                           {guild.features && guild.features.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {guild.features.slice(0, 3).map((feature) => (
@@ -664,7 +742,7 @@ export default function AdminPanel() {
                                   key={feature}
                                   className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full"
                                 >
-                                  {feature.replace('_', ' ').toLowerCase()}
+                                  {feature.replace("_", " ").toLowerCase()}
                                 </span>
                               ))}
                               {guild.features.length > 3 && (
@@ -674,29 +752,48 @@ export default function AdminPanel() {
                               )}
                             </div>
                           )}
-                          
+
                           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 space-y-1">
-                            <div>ID: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">{guild.id}</code></div>
+                            <div>
+                              ID:{" "}
+                              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">
+                                {guild.id}
+                              </code>
+                            </div>
                             {guild.joinedAt && (
-                              <div>Beigetreten: {new Date(guild.joinedAt).toLocaleDateString('de-DE')}</div>
+                              <div>
+                                Beigetreten:{" "}
+                                {new Date(guild.joinedAt).toLocaleDateString(
+                                  "de-DE",
+                                )}
+                              </div>
                             )}
-                            <div>Erstellt: {new Date(guild.createdAt).toLocaleDateString('de-DE')}</div>
+                            <div>
+                              Erstellt:{" "}
+                              {new Date(guild.createdAt).toLocaleDateString(
+                                "de-DE",
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Action buttons */}
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => window.open(`/dashboard/${guild.id}`, '_blank')}
+                          onClick={() =>
+                            window.open(`/dashboard/${guild.id}`, "_blank")
+                          }
                           className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                         >
                           Dashboard öffnen
                         </button>
                         <button
-                          onClick={() => navigator.clipboard.writeText(guild.id)}
+                          onClick={() =>
+                            navigator.clipboard.writeText(guild.id)
+                          }
                           className="px-3 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                           title="Guild ID kopieren"
                         >
@@ -707,7 +804,7 @@ export default function AdminPanel() {
                   </div>
                 ))}
               </div>
-              
+
               {guilds.length === 0 && (
                 <div className="text-center py-12">
                   <ServerStackIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -723,9 +820,11 @@ export default function AdminPanel() {
           )}
 
           {/* Activity Tab */}
-          {activeTab === 'activity' && (
+          {activeTab === "activity" && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Admin-Aktivitäten</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Admin-Aktivitäten
+              </h2>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="p-6 space-y-4">
                   {activities.length === 0 ? (
@@ -734,7 +833,10 @@ export default function AdminPanel() {
                     </p>
                   ) : (
                     activities.map((activity) => (
-                      <div key={activity.id} className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div
+                        key={activity.id}
+                        className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                      >
                         <div className="flex-shrink-0">
                           <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
                             <ClockIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -743,10 +845,11 @@ export default function AdminPanel() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2">
                             <span className="text-sm font-medium text-gray-900 dark:text-white">
-                              {activity.admin_username || activity.admin_user_id}
+                              {activity.admin_username ||
+                                activity.admin_user_id}
                             </span>
                             <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {activity.action.replace('_', ' ').toLowerCase()}
+                              {activity.action.replace("_", " ").toLowerCase()}
                             </span>
                           </div>
                           {activity.details && (
@@ -755,7 +858,11 @@ export default function AdminPanel() {
                             </p>
                           )}
                           <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            <span>{new Date(activity.created_at).toLocaleString('de-DE')}</span>
+                            <span>
+                              {new Date(activity.created_at).toLocaleString(
+                                "de-DE",
+                              )}
+                            </span>
                             {activity.target_type && (
                               <span>Target: {activity.target_type}</span>
                             )}

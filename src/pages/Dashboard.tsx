@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { authService } from '../lib/auth';
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { authService } from "../lib/auth";
 import {
   UsersIcon,
   ServerIcon,
@@ -8,7 +8,7 @@ import {
   ShieldCheckIcon,
   CalendarIcon,
   ChartBarIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 interface ServerStats {
   // Basic guild info
@@ -55,7 +55,13 @@ interface StatCardProps {
   description?: string;
 }
 
-function StatCard({ title, value, icon: Icon, color, description }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  color,
+  description,
+}: StatCardProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center">
@@ -63,10 +69,16 @@ function StatCard({ title, value, icon: Icon, color, description }: StatCardProp
           <Icon className="h-6 w-6 text-white" />
         </div>
         <div className="ml-4 flex-1">
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {title}
+          </p>
+          <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+            {value}
+          </p>
           {description && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {description}
+            </p>
           )}
         </div>
       </div>
@@ -86,8 +98,8 @@ export default function Dashboard() {
       const serverStats = await authService.getDashboardStats(guildId!);
       setStats(serverStats);
     } catch (err) {
-      console.error('Error loading server stats:', err);
-      setError('Failed to load server statistics');
+      console.error("Error loading server stats:", err);
+      setError("Failed to load server statistics");
     } finally {
       setLoading(false);
     }
@@ -100,21 +112,21 @@ export default function Dashboard() {
   }, [guildId, loadStats]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("de-DE", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const getVerificationLevelText = (level: number) => {
-    const levels = ['None', 'Low', 'Medium', 'High', 'Very High'];
-    return levels[level] || 'Unknown';
+    const levels = ["None", "Low", "Medium", "High", "Very High"];
+    return levels[level] || "Unknown";
   };
 
   const getPremiumTierText = (tier: number) => {
-    const tiers = ['No Boost', 'Tier 1', 'Tier 2', 'Tier 3'];
-    return tiers[tier] || 'Unknown';
+    const tiers = ["No Boost", "Tier 1", "Tier 2", "Tier 3"];
+    return tiers[tier] || "Unknown";
   };
 
   if (loading) {
@@ -124,7 +136,10 @@ export default function Dashboard() {
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-xl h-24"></div>
+              <div
+                key={i}
+                className="bg-gray-200 dark:bg-gray-700 rounded-xl h-24"
+              ></div>
             ))}
           </div>
         </div>
@@ -296,24 +311,44 @@ export default function Dashboard() {
           </h3>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Server ID:</span>
-              <span className="text-gray-900 dark:text-white font-mono text-sm">{stats.guildId}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Server ID:
+              </span>
+              <span className="text-gray-900 dark:text-white font-mono text-sm">
+                {stats.guildId}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Total Roles:</span>
-              <span className="text-gray-900 dark:text-white">{stats.totalRoles}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Total Roles:
+              </span>
+              <span className="text-gray-900 dark:text-white">
+                {stats.totalRoles}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Verification Level:</span>
-              <span className="text-gray-900 dark:text-white">{getVerificationLevelText(stats.verificationLevel)}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Verification Level:
+              </span>
+              <span className="text-gray-900 dark:text-white">
+                {getVerificationLevelText(stats.verificationLevel)}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Boost Level:</span>
-              <span className="text-gray-900 dark:text-white">{getPremiumTierText(stats.premiumTier)}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Boost Level:
+              </span>
+              <span className="text-gray-900 dark:text-white">
+                {getPremiumTierText(stats.premiumTier)}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Boost Count:</span>
-              <span className="text-gray-900 dark:text-white">{stats.premiumSubscriptionCount}</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                Boost Count:
+              </span>
+              <span className="text-gray-900 dark:text-white">
+                {stats.premiumSubscriptionCount}
+              </span>
             </div>
           </div>
         </div>
@@ -326,17 +361,25 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center mb-2">
                 <CalendarIcon className="h-4 w-4 text-gray-500 mr-2" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Server Created</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Server Created
+                </span>
               </div>
-              <p className="text-gray-900 dark:text-white">{formatDate(stats.createdAt)}</p>
+              <p className="text-gray-900 dark:text-white">
+                {formatDate(stats.createdAt)}
+              </p>
             </div>
             {stats.botJoinedAt && (
               <div>
                 <div className="flex items-center mb-2">
                   <CalendarIcon className="h-4 w-4 text-gray-500 mr-2" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Bot Joined</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Bot Joined
+                  </span>
                 </div>
-                <p className="text-gray-900 dark:text-white">{formatDate(stats.botJoinedAt)}</p>
+                <p className="text-gray-900 dark:text-white">
+                  {formatDate(stats.botJoinedAt)}
+                </p>
               </div>
             )}
           </div>

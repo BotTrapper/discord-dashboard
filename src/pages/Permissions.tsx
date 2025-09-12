@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { authService } from '../lib/auth';
-import DiscordAutocomplete from '../components/DiscordAutocomplete';
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { authService } from "../lib/auth";
+import DiscordAutocomplete from "../components/DiscordAutocomplete";
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -10,11 +10,11 @@ import {
   KeyIcon,
   UserGroupIcon,
   PencilIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 interface Permission {
   id: number;
-  type: 'user' | 'role';
+  type: "user" | "role";
   targetId: string;
   targetName: string;
   permissions: string[];
@@ -28,7 +28,7 @@ interface Permission {
 }
 
 interface AddPermissionForm {
-  type: 'user' | 'role';
+  type: "user" | "role";
   targetId: string;
   targetName: string;
   permissions: string[];
@@ -41,23 +41,50 @@ export default function Permissions() {
   const [error, setError] = useState<string | null>(null);
   const [addingPermission, setAddingPermission] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingPermission, setEditingPermission] = useState<Permission | null>(null);
+  const [editingPermission, setEditingPermission] = useState<Permission | null>(
+    null,
+  );
   const [showEditForm, setShowEditForm] = useState(false);
 
   const [newPermission, setNewPermission] = useState<AddPermissionForm>({
-    type: 'user',
-    targetId: '',
-    targetName: '',
-    permissions: ['dashboard.view']
+    type: "user",
+    targetId: "",
+    targetName: "",
+    permissions: ["dashboard.view"],
   });
 
   const availablePermissions = [
-    { id: 'dashboard.view', label: 'Dashboard anzeigen', description: 'Kann das Dashboard öffnen und grundlegende Statistiken sehen' },
-    { id: 'dashboard.admin', label: 'Dashboard verwalten', description: 'Vollzugriff auf alle Dashboard-Funktionen' },
-    { id: 'tickets.view', label: 'Tickets anzeigen', description: 'Kann Ticket-System einsehen' },
-    { id: 'tickets.manage', label: 'Tickets verwalten', description: 'Kann Tickets erstellen, bearbeiten und löschen' },
-    { id: 'autoresponse.view', label: 'Auto-Responses anzeigen', description: 'Kann Auto-Response-Einstellungen einsehen' },
-    { id: 'autoresponse.manage', label: 'Auto-Responses verwalten', description: 'Kann Auto-Responses erstellen und bearbeiten' },
+    {
+      id: "dashboard.view",
+      label: "Dashboard anzeigen",
+      description:
+        "Kann das Dashboard öffnen und grundlegende Statistiken sehen",
+    },
+    {
+      id: "dashboard.admin",
+      label: "Dashboard verwalten",
+      description: "Vollzugriff auf alle Dashboard-Funktionen",
+    },
+    {
+      id: "tickets.view",
+      label: "Tickets anzeigen",
+      description: "Kann Ticket-System einsehen",
+    },
+    {
+      id: "tickets.manage",
+      label: "Tickets verwalten",
+      description: "Kann Tickets erstellen, bearbeiten und löschen",
+    },
+    {
+      id: "autoresponse.view",
+      label: "Auto-Responses anzeigen",
+      description: "Kann Auto-Response-Einstellungen einsehen",
+    },
+    {
+      id: "autoresponse.manage",
+      label: "Auto-Responses verwalten",
+      description: "Kann Auto-Responses erstellen und bearbeiten",
+    },
   ];
 
   const loadPermissions = useCallback(async () => {
@@ -69,8 +96,8 @@ export default function Permissions() {
       const data = await authService.getPermissions(guildId);
       setPermissions(data);
     } catch (err) {
-      console.error('Error loading permissions:', err);
-      setError('Fehler beim Laden der Berechtigungen');
+      console.error("Error loading permissions:", err);
+      setError("Fehler beim Laden der Berechtigungen");
     } finally {
       setLoading(false);
     }
@@ -88,29 +115,37 @@ export default function Permissions() {
       const updatedPermissions = await Promise.all(
         permissions.map(async (permission) => {
           try {
-            if (permission.type === 'user') {
-              const members = await authService.getGuildMembers(guildId, permission.targetId);
-              const member = members.find(m => m.id === permission.targetId);
+            if (permission.type === "user") {
+              const members = await authService.getGuildMembers(
+                guildId,
+                permission.targetId,
+              );
+              const member = members.find((m) => m.id === permission.targetId);
               if (member) {
-                return { ...permission, targetName: member.displayName || member.username };
+                return {
+                  ...permission,
+                  targetName: member.displayName || member.username,
+                };
               }
-            } else if (permission.type === 'role') {
+            } else if (permission.type === "role") {
               const roles = await authService.getGuildRoles(guildId);
-              const role = roles.find(r => r.id === permission.targetId);
+              const role = roles.find((r) => r.id === permission.targetId);
               if (role) {
                 return { ...permission, targetName: role.name };
               }
             }
           } catch {
-            console.warn(`Could not refresh name for ${permission.type} ${permission.targetId}`);
+            console.warn(
+              `Could not refresh name for ${permission.type} ${permission.targetId}`,
+            );
           }
           return permission;
-        })
+        }),
       );
 
       setPermissions(updatedPermissions);
     } catch (err) {
-      console.warn('Could not refresh permission names:', err);
+      console.warn("Could not refresh permission names:", err);
     }
   }, [guildId, permissions]);
 
@@ -123,8 +158,12 @@ export default function Permissions() {
   }, [permissions.length]);
 
   const handleAddPermission = async () => {
-    if (!guildId || !newPermission.targetId.trim() || !newPermission.targetName.trim()) {
-      setError('Bitte alle Felder ausfüllen');
+    if (
+      !guildId ||
+      !newPermission.targetId.trim() ||
+      !newPermission.targetName.trim()
+    ) {
+      setError("Bitte alle Felder ausfüllen");
       return;
     }
 
@@ -136,20 +175,20 @@ export default function Permissions() {
         type: newPermission.type,
         targetId: newPermission.targetId.trim(),
         targetName: newPermission.targetName.trim(),
-        permissions: newPermission.permissions
+        permissions: newPermission.permissions,
       });
 
       setNewPermission({
-        type: 'user',
-        targetId: '',
-        targetName: '',
-        permissions: ['dashboard.view']
+        type: "user",
+        targetId: "",
+        targetName: "",
+        permissions: ["dashboard.view"],
       });
       setShowAddForm(false);
       await loadPermissions();
     } catch (err) {
-      console.error('Error adding permission:', err);
-      setError('Fehler beim Hinzufügen der Berechtigung');
+      console.error("Error adding permission:", err);
+      setError("Fehler beim Hinzufügen der Berechtigung");
     } finally {
       setAddingPermission(false);
     }
@@ -163,17 +202,17 @@ export default function Permissions() {
       await authService.removePermission(guildId, permissionId);
       await loadPermissions();
     } catch (err) {
-      console.error('Error removing permission:', err);
-      setError('Fehler beim Entfernen der Berechtigung');
+      console.error("Error removing permission:", err);
+      setError("Fehler beim Entfernen der Berechtigung");
     }
   };
 
   const handlePermissionToggle = (permissionId: string) => {
-    setNewPermission(prev => ({
+    setNewPermission((prev) => ({
       ...prev,
       permissions: prev.permissions.includes(permissionId)
-        ? prev.permissions.filter(p => p !== permissionId)
-        : [...prev.permissions, permissionId]
+        ? prev.permissions.filter((p) => p !== permissionId)
+        : [...prev.permissions, permissionId],
     }));
   };
 
@@ -193,36 +232,36 @@ export default function Permissions() {
         type: editingPermission.type,
         targetId: editingPermission.targetId,
         targetName: editingPermission.targetName,
-        permissions: editingPermission.permissions
+        permissions: editingPermission.permissions,
       });
 
       setShowEditForm(false);
       setEditingPermission(null);
       await loadPermissions();
     } catch (err) {
-      console.error('Error updating permission:', err);
-      setError('Fehler beim Aktualisieren der Berechtigung');
+      console.error("Error updating permission:", err);
+      setError("Fehler beim Aktualisieren der Berechtigung");
     }
   };
 
   const handleEditPermissionToggle = (permissionId: string) => {
     if (!editingPermission) return;
 
-    setEditingPermission(prev => ({
+    setEditingPermission((prev) => ({
       ...prev!,
       permissions: prev!.permissions.includes(permissionId)
-        ? prev!.permissions.filter(p => p !== permissionId)
-        : [...prev!.permissions, permissionId]
+        ? prev!.permissions.filter((p) => p !== permissionId)
+        : [...prev!.permissions, permissionId],
     }));
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("de-DE", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -233,7 +272,10 @@ export default function Permissions() {
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-xl h-16"></div>
+              <div
+                key={i}
+                className="bg-gray-200 dark:bg-gray-700 rounded-xl h-16"
+              ></div>
             ))}
           </div>
         </div>
@@ -290,8 +332,13 @@ export default function Permissions() {
                     type="radio"
                     name="type"
                     value="user"
-                    checked={newPermission.type === 'user'}
-                    onChange={(e) => setNewPermission(prev => ({ ...prev, type: e.target.value as 'user' | 'role' }))}
+                    checked={newPermission.type === "user"}
+                    onChange={(e) =>
+                      setNewPermission((prev) => ({
+                        ...prev,
+                        type: e.target.value as "user" | "role",
+                      }))
+                    }
                     className="mr-2"
                   />
                   <UserIcon className="h-4 w-4 mr-1" />
@@ -302,8 +349,13 @@ export default function Permissions() {
                     type="radio"
                     name="type"
                     value="role"
-                    checked={newPermission.type === 'role'}
-                    onChange={(e) => setNewPermission(prev => ({ ...prev, type: e.target.value as 'user' | 'role' }))}
+                    checked={newPermission.type === "role"}
+                    onChange={(e) =>
+                      setNewPermission((prev) => ({
+                        ...prev,
+                        type: e.target.value as "user" | "role",
+                      }))
+                    }
                     className="mr-2"
                   />
                   <UserGroupIcon className="h-4 w-4 mr-1" />
@@ -315,30 +367,37 @@ export default function Permissions() {
             {/* Target Selection with Autocomplete */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {newPermission.type === 'user' ? 'Benutzer auswählen' : 'Rolle auswählen'}
+                {newPermission.type === "user"
+                  ? "Benutzer auswählen"
+                  : "Rolle auswählen"}
               </label>
               <DiscordAutocomplete
                 guildId={guildId!}
                 type={newPermission.type}
-                value={newPermission.targetId && newPermission.targetName ?
-                  { id: newPermission.targetId, name: newPermission.targetName } : null
+                value={
+                  newPermission.targetId && newPermission.targetName
+                    ? {
+                        id: newPermission.targetId,
+                        name: newPermission.targetName,
+                      }
+                    : null
                 }
                 onChange={(selected) => {
                   if (selected) {
-                    setNewPermission(prev => ({
+                    setNewPermission((prev) => ({
                       ...prev,
                       targetId: selected.id,
-                      targetName: selected.name
+                      targetName: selected.name,
                     }));
                   } else {
-                    setNewPermission(prev => ({
+                    setNewPermission((prev) => ({
                       ...prev,
-                      targetId: '',
-                      targetName: ''
+                      targetId: "",
+                      targetName: "",
                     }));
                   }
                 }}
-                placeholder={`${newPermission.type === 'user' ? 'Benutzer' : 'Rolle'} suchen und auswählen...`}
+                placeholder={`${newPermission.type === "user" ? "Benutzer" : "Rolle"} suchen und auswählen...`}
               />
 
               {/* Manual Input Fallback */}
@@ -354,29 +413,48 @@ export default function Permissions() {
                     <input
                       type="text"
                       value={newPermission.targetId}
-                      onChange={(e) => setNewPermission(prev => ({ ...prev, targetId: e.target.value }))}
-                      placeholder={newPermission.type === 'user' ? 'z.B. 123456789012345678' : 'z.B. 987654321098765432'}
+                      onChange={(e) =>
+                        setNewPermission((prev) => ({
+                          ...prev,
+                          targetId: e.target.value,
+                        }))
+                      }
+                      placeholder={
+                        newPermission.type === "user"
+                          ? "z.B. 123456789012345678"
+                          : "z.B. 987654321098765432"
+                      }
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                     />
                   </div>
                   <div>
                     <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
-                      {newPermission.type === 'user' ? 'Benutzername' : 'Rollenname'}
+                      {newPermission.type === "user"
+                        ? "Benutzername"
+                        : "Rollenname"}
                     </label>
                     <input
                       type="text"
                       value={newPermission.targetName}
-                      onChange={(e) => setNewPermission(prev => ({ ...prev, targetName: e.target.value }))}
-                      placeholder={newPermission.type === 'user' ? 'z.B. Julscha' : 'z.B. Moderator'}
+                      onChange={(e) =>
+                        setNewPermission((prev) => ({
+                          ...prev,
+                          targetName: e.target.value,
+                        }))
+                      }
+                      placeholder={
+                        newPermission.type === "user"
+                          ? "z.B. Julscha"
+                          : "z.B. Moderator"
+                      }
                       className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
                     />
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                  {newPermission.type === 'user'
+                  {newPermission.type === "user"
                     ? 'Rechtsklick auf den Benutzer in Discord → "ID kopieren" aktivieren unter Erweitert → Entwicklermodus'
-                    : 'Rechtsklick auf die Rolle in Discord → "ID kopieren" aktivieren unter Erweitert → Entwicklermodus'
-                  }
+                    : 'Rechtsklick auf die Rolle in Discord → "ID kopieren" aktivieren unter Erweitert → Entwicklermodus'}
                 </p>
               </div>
             </div>
@@ -457,7 +535,8 @@ export default function Permissions() {
                 Keine Berechtigungen konfiguriert
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Füge Benutzer oder Rollen hinzu, die Zugriff auf das DSCP haben sollen.
+                Füge Benutzer oder Rollen hinzu, die Zugriff auf das DSCP haben
+                sollen.
               </p>
             </div>
           ) : (
@@ -466,32 +545,40 @@ export default function Permissions() {
                 <div
                   key={permission.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg gap-3 sm:gap-0 ${
-                    permission.isOwner 
-                      ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700' 
-                      : 'bg-gray-50 dark:bg-gray-700'
+                    permission.isOwner
+                      ? "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700"
+                      : "bg-gray-50 dark:bg-gray-700"
                   }`}
                 >
                   <div className="flex items-start sm:items-center">
                     <div className="relative flex-shrink-0">
-                      {permission.type === 'user' ? (
+                      {permission.type === "user" ? (
                         <div className="flex items-center">
                           {permission.avatar ? (
-                            <img 
-                              src={permission.avatar} 
+                            <img
+                              src={permission.avatar}
                               alt={permission.targetName}
-                              className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full mr-2 sm:mr-3 ${permission.isOwner ? 'ring-2 ring-yellow-500' : ''}`}
+                              className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full mr-2 sm:mr-3 ${permission.isOwner ? "ring-2 ring-yellow-500" : ""}`}
                             />
                           ) : (
-                            <UserIcon className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-0.5 sm:mt-0 ${permission.isOwner ? 'text-yellow-600' : 'text-blue-500'}`} />
+                            <UserIcon
+                              className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 mt-0.5 sm:mt-0 ${permission.isOwner ? "text-yellow-600" : "text-blue-500"}`}
+                            />
                           )}
                         </div>
                       ) : (
                         <div className="flex items-center">
-                          <div 
-                            className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 rounded-full flex items-center justify-center ${permission.isOwner ? 'ring-2 ring-yellow-500' : ''}`}
-                            style={{ backgroundColor: permission.color ? `#${permission.color.toString(16).padStart(6, '0')}` : '#99AAB5' }}
+                          <div
+                            className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 rounded-full flex items-center justify-center ${permission.isOwner ? "ring-2 ring-yellow-500" : ""}`}
+                            style={{
+                              backgroundColor: permission.color
+                                ? `#${permission.color.toString(16).padStart(6, "0")}`
+                                : "#99AAB5",
+                            }}
                           >
-                            <UserGroupIcon className={`h-3 w-3 sm:h-4 sm:w-4 ${permission.color && permission.color !== 0 ? 'text-white' : 'text-gray-600'}`} />
+                            <UserGroupIcon
+                              className={`h-3 w-3 sm:h-4 sm:w-4 ${permission.color && permission.color !== 0 ? "text-white" : "text-gray-600"}`}
+                            />
                           </div>
                         </div>
                       )}
@@ -505,13 +592,17 @@ export default function Permissions() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                         <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white truncate">
                           {permission.targetName}
-                          {permission.type === 'role' && permission.color && permission.color !== 0 && (
-                            <span 
-                              className="ml-2 inline-block w-2 h-2 sm:w-3 sm:h-3 rounded-full"
-                              style={{ backgroundColor: `#${permission.color.toString(16).padStart(6, '0')}` }}
-                              title="Rollenfarbe"
-                            />
-                          )}
+                          {permission.type === "role" &&
+                            permission.color &&
+                            permission.color !== 0 && (
+                              <span
+                                className="ml-2 inline-block w-2 h-2 sm:w-3 sm:h-3 rounded-full"
+                                style={{
+                                  backgroundColor: `#${permission.color.toString(16).padStart(6, "0")}`,
+                                }}
+                                title="Rollenfarbe"
+                              />
+                            )}
                         </h4>
                         {permission.isOwner && (
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-full self-start">
@@ -521,20 +612,25 @@ export default function Permissions() {
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         <span className="inline-flex items-center">
-                          {permission.type === 'user' ? (
+                          {permission.type === "user" ? (
                             <>
                               <UserIcon className="h-3 w-3 mr-1" />
                               Benutzer
-                              {permission.discriminator && permission.discriminator !== '0' && (
-                                <span className="ml-1">#{permission.discriminator}</span>
-                              )}
+                              {permission.discriminator &&
+                                permission.discriminator !== "0" && (
+                                  <span className="ml-1">
+                                    #{permission.discriminator}
+                                  </span>
+                                )}
                             </>
                           ) : (
                             <>
                               <UserGroupIcon className="h-3 w-3 mr-1" />
                               Rolle
                               {permission.position && (
-                                <span className="ml-1">• Pos. {permission.position}</span>
+                                <span className="ml-1">
+                                  • Pos. {permission.position}
+                                </span>
                               )}
                             </>
                           )}
@@ -543,19 +639,23 @@ export default function Permissions() {
                           ID: {permission.targetId.substring(0, 10)}...
                         </span>
                         {permission.isOwner && (
-                          <span className="ml-2 text-yellow-600 dark:text-yellow-400">• Auto-Berechtigung</span>
+                          <span className="ml-2 text-yellow-600 dark:text-yellow-400">
+                            • Auto-Berechtigung
+                          </span>
                         )}
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {permission.permissions.map((perm) => {
-                          const permInfo = availablePermissions.find(p => p.id === perm);
+                          const permInfo = availablePermissions.find(
+                            (p) => p.id === perm,
+                          );
                           return (
                             <span
                               key={perm}
                               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                                 permission.isOwner
-                                  ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
-                                  : 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200'
+                                  ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
+                                  : "bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200"
                               }`}
                             >
                               {permInfo?.label || perm}
@@ -566,14 +666,16 @@ export default function Permissions() {
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {permission.isOwner
                           ? `Server erstellt: ${formatDate(permission.createdAt)}`
-                          : `Hinzugefügt: ${formatDate(permission.createdAt)}`
-                        }
+                          : `Hinzugefügt: ${formatDate(permission.createdAt)}`}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center justify-end space-x-2 flex-shrink-0">
                     {permission.isOwner ? (
-                      <div className="p-2 text-gray-400 cursor-not-allowed" title="Serverbesitzer-Berechtigungen können nicht entfernt werden">
+                      <div
+                        className="p-2 text-gray-400 cursor-not-allowed"
+                        title="Serverbesitzer-Berechtigungen können nicht entfernt werden"
+                      >
                         <ShieldCheckIcon className="h-4 w-4" />
                       </div>
                     ) : (
@@ -616,7 +718,7 @@ export default function Permissions() {
                 Typ
               </span>
               <div className="flex items-center space-x-2">
-                {editingPermission.type === 'user' ? (
+                {editingPermission.type === "user" ? (
                   <>
                     <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                     <span className="text-sm sm:text-base text-gray-900 dark:text-white">
@@ -637,11 +739,11 @@ export default function Permissions() {
             {/* Target Display */}
             <div>
               <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {editingPermission.type === 'user' ? 'Benutzer' : 'Rolle'}
+                {editingPermission.type === "user" ? "Benutzer" : "Rolle"}
               </span>
               <div className="flex items-center">
                 <div className="flex items-center">
-                  {editingPermission.type === 'user' ? (
+                  {editingPermission.type === "user" ? (
                     <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2 sm:mr-3" />
                   ) : (
                     <UserGroupIcon className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 sm:mr-3" />

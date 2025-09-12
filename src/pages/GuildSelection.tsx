@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService, type Guild } from '../lib/auth';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService, type Guild } from "../lib/auth";
 import {
   ServerIcon,
   ArrowRightIcon,
   ExclamationTriangleIcon,
   ShieldCheckIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
 export default function GuildSelection() {
   const [guilds, setGuilds] = useState<Guild[]>([]);
@@ -26,11 +26,11 @@ export default function GuildSelection() {
       if (user) {
         setGuilds(user.guilds);
       } else {
-        setError('Failed to load user data');
+        setError("Failed to load user data");
       }
     } catch (err) {
-      setError('Failed to load guilds');
-      console.error('Error loading guilds:', err);
+      setError("Failed to load guilds");
+      console.error("Error loading guilds:", err);
     } finally {
       setLoading(false);
     }
@@ -38,11 +38,11 @@ export default function GuildSelection() {
 
   const checkAdminStatus = async () => {
     try {
-      const response = await authService.apiRequest('/api/admin/status');
+      const response = await authService.apiRequest("/api/admin/status");
       const data = await response.json();
       setIsAdmin(data.isAdmin || false);
     } catch (err) {
-      console.log('Not an admin or error checking status:', err);
+      console.log("Not an admin or error checking status:", err);
       setIsAdmin(false);
     }
   };
@@ -56,7 +56,9 @@ export default function GuildSelection() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your servers...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Loading your servers...
+          </p>
         </div>
       </div>
     );
@@ -67,7 +69,9 @@ export default function GuildSelection() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Error</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Error
+          </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button
             onClick={loadGuilds}
@@ -103,13 +107,16 @@ export default function GuildSelection() {
             <div className="bg-gradient-to-r from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-center">
               <div className="flex items-center justify-center mb-4">
                 <ShieldCheckIcon className="h-8 w-8 text-white mr-3" />
-                <h2 className="text-xl font-bold text-white">Global Administrator</h2>
+                <h2 className="text-xl font-bold text-white">
+                  Global Administrator
+                </h2>
               </div>
               <p className="text-red-100 mb-4">
-                Sie haben globale Admin-Berechtigung und können das Admin Control Panel verwenden.
+                Sie haben globale Admin-Berechtigung und können das Admin
+                Control Panel verwenden.
               </p>
               <button
-                onClick={() => navigate('/admin')}
+                onClick={() => navigate("/admin")}
                 className="inline-flex items-center px-6 py-3 bg-white text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-colors shadow-lg"
               >
                 <ShieldCheckIcon className="h-5 w-5 mr-2" />
@@ -126,7 +133,8 @@ export default function GuildSelection() {
               No Available Servers
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You don't have manage permissions on any servers where BotTrapper is installed.
+              You don't have manage permissions on any servers where BotTrapper
+              is installed.
             </p>
             <a
               href="https://discord.com/api/oauth2/authorize?client_id=YOUR_BOT_CLIENT_ID&permissions=8&scope=bot"
