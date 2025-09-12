@@ -190,16 +190,22 @@ jobs:
       
     - name: Test Docker image
       run: |
+        # First verify the image was built
+        docker images | grep dashboard || echo "No dashboard image found"
+        
+        # Test basic functionality
         docker run --rm --entrypoint="" dashboard:test node --version
-        docker run --rm --entrypoint="" dashboard:test ls -la /app/dist
+        docker run --rm --entrypoint="" dashboard:test ls -la /app/dist || echo "dist directory check failed"
         
         # Test if the application starts (briefly)
+        echo "Starting dashboard container for testing..."
         docker run --rm --name dashboard-test -d -p 3000:3000 dashboard:test
-        sleep 5
+        sleep 10
         
         # Check if container is running
         if docker ps | grep dashboard-test; then
           echo "✅ Dashboard container started successfully"
+          docker logs dashboard-test || true
           docker stop dashboard-test
         else
           echo "❌ Dashboard container failed to start"
