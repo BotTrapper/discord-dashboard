@@ -120,8 +120,8 @@ jobs:
     - name: Test build initialization
       run: |
         cat > test-build.js << 'EOF'
-        const fs = require('fs');
-        const path = require('path');
+        import fs from 'fs';
+        import path from 'path';
         
         console.log('Testing dashboard build...');
         
