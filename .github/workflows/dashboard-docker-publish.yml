@@ -59,6 +59,10 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        build-args: |
+          VITE_API_URL=https://api.bottrapper.me
+          VITE_APP_TITLE=BotTrapper Dashboard
+          VITE_BOT_CLIENT_ID=${{ secrets.VITE_BOT_CLIENT_ID }}
 
     # Make package public after push
     - name: Make dashboard package public
