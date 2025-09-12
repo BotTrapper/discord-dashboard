@@ -27,6 +27,7 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: [
       'dashboard.bottrapper.me',
+      'bottrapper.me',
       'api.bottrapper.me',
       'localhost',
       '127.0.0.1',
