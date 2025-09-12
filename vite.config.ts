@@ -15,5 +15,35 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(packageJson.version),
     __BUILD_DATE__: JSON.stringify(new Date().toISOString())
   },
-  envPrefix: 'VITE_'
+  envPrefix: 'VITE_',
+  server: {
+    host: true, // Allow external connections
+    port: 3000,
+    strictPort: true,
+  },
+  preview: {
+    host: true,
+    port: 3000,
+    strictPort: true,
+    allowedHosts: [
+      'dashboard.bottrapper.me',
+      'api.bottrapper.me',
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0'
+    ]
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          api: ['axios'],
+          ui: ['@heroicons/react']
+        }
+      }
+    }
+  }
 })
