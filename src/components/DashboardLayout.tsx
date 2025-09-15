@@ -42,7 +42,7 @@ export default function DashboardLayout() {
   const currentPath = location.pathname.split("/").pop() || "";
 
   const handleLogout = () => {
-    authService.logout();
+    authService.logout(true); // Explicitly call backend logout
   };
 
   return (

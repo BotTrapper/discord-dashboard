@@ -160,15 +160,20 @@ class AuthService {
     window.location.href = `${API_BASE_URL}/auth/discord`;
   }
 
-  logout() {
+  logout(redirectToBackend: boolean = false) {
     console.log("Logging out...");
     this.user = null;
     this.token = null;
     localStorage.removeItem("discord_token");
 
-    // Only redirect to backend logout if not already on login page
-    if (!window.location.pathname.includes("/login")) {
+    if (redirectToBackend) {
+      // Explicit logout - call backend logout endpoint
       window.location.href = `${API_BASE_URL}/auth/logout`;
+    } else {
+      // Just clear local state and redirect to login
+      if (!window.location.pathname.includes("/login")) {
+        window.location.replace("/login");
+      }
     }
   }
 
@@ -202,8 +207,11 @@ class AuthService {
       console.error("❌ Failed to get current user:", error);
 
       if (error.response?.status === 401) {
-        console.log("🚪 Token expired or invalid, logging out...");
-        this.logout();
+        console.log("🚪 Token expired or invalid, clearing local state...");
+        // Just clear local state, don't redirect to backend
+        this.user = null;
+        this.token = null;
+        localStorage.removeItem("discord_token");
       } else {
         console.log("🔄 Network or server error, keeping token for retry");
       }
