@@ -48,18 +48,20 @@ class ApiService {
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        
+
         // Add admin session token if available
         const guildIdMatch = config.url?.match(/\/(\d+)(?:\/|$)/);
         if (guildIdMatch) {
           const guildId = guildIdMatch[1];
-          const adminSessionToken = localStorage.getItem(`admin-session-${guildId}`);
+          const adminSessionToken = localStorage.getItem(
+            `admin-session-${guildId}`,
+          );
           if (adminSessionToken) {
-            config.headers['x-admin-session'] = adminSessionToken;
+            config.headers["x-admin-session"] = adminSessionToken;
             console.log(`🔑 Using admin session token for guild ${guildId}`);
           }
         }
-        
+
         return config;
       },
       (error) => {
@@ -197,11 +199,14 @@ class ApiService {
       adminLevel: number;
       expiresAt: number;
     }>(`/api/admin/session/${guildId}`);
-    
+
     // Store session token for automatic use
-    localStorage.setItem(`admin-session-${guildId}`, response.data.sessionToken);
+    localStorage.setItem(
+      `admin-session-${guildId}`,
+      response.data.sessionToken,
+    );
     console.log(`🔑 Generated admin session for guild ${guildId}`);
-    
+
     return response.data;
   }
 
@@ -219,8 +224,9 @@ class ApiService {
     try {
       // Temporarily add the header manually for validation
       const originalHeaders = this.axiosInstance.defaults.headers;
-      this.axiosInstance.defaults.headers['x-admin-session'] = adminSessionToken;
-      
+      this.axiosInstance.defaults.headers["x-admin-session"] =
+        adminSessionToken;
+
       const response = await this.get<{
         valid: boolean;
         userId: string;
@@ -228,13 +234,16 @@ class ApiService {
         adminLevel: number;
         expiresAt: number;
       }>(`/api/admin/session/validate/${guildId}`);
-      
+
       // Restore original headers
       this.axiosInstance.defaults.headers = originalHeaders;
-      
+
       return response.data;
     } catch (error) {
-      console.warn(`❌ Admin session validation failed for guild ${guildId}:`, error);
+      console.warn(
+        `❌ Admin session validation failed for guild ${guildId}:`,
+        error,
+      );
       localStorage.removeItem(`admin-session-${guildId}`);
       return { valid: false };
     }

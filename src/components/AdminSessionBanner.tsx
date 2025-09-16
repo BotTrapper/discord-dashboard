@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { api } from "../lib/api";
-import { ShieldCheckIcon, ClockIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ShieldCheckIcon,
+  ClockIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 
 interface AdminSessionBannerProps {
   guildId: string;
@@ -13,7 +17,9 @@ interface AdminSession {
   expiresAt?: number;
 }
 
-export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId }) => {
+export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({
+  guildId,
+}) => {
   const [session, setSession] = useState<AdminSession | null>(null);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -46,10 +52,10 @@ export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId 
   const formatTimeRemaining = (expiresAt: number): string => {
     const remaining = expiresAt - Date.now();
     if (remaining <= 0) return "Abgelaufen";
-    
+
     const hours = Math.floor(remaining / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -67,7 +73,7 @@ export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId 
           <div className="flex-shrink-0">
             <ShieldCheckIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />
           </div>
-          
+
           <div className="flex-1">
             <h3 className="text-sm font-medium text-amber-800 dark:text-amber-200">
               🔑 Admin-Modus aktiv
@@ -76,7 +82,7 @@ export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId 
               <p className="text-sm text-amber-700 dark:text-amber-300">
                 Sie verwenden Admin-Berechtigung Level {session.adminLevel}
               </p>
-              
+
               {session.expiresAt && (
                 <div className="flex items-center space-x-1 text-xs text-amber-600 dark:text-amber-400">
                   <ClockIcon className="h-4 w-4" />
@@ -88,7 +94,7 @@ export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId 
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setIsVisible(false)}
@@ -97,7 +103,7 @@ export const AdminSessionBanner: React.FC<AdminSessionBannerProps> = ({ guildId 
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
-          
+
           <button
             onClick={clearSession}
             className="px-3 py-1 text-xs bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"

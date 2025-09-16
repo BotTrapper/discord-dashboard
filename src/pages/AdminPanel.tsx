@@ -86,17 +86,21 @@ export default function AdminPanel() {
   const handleOpenGuildDashboard = async (guildId: string) => {
     try {
       console.log(`🔑 Generating admin session for guild ${guildId}...`);
-      
+
       // Generate admin session token
       await api.generateAdminSession(guildId);
-      
+
       // Open guild dashboard in new tab
       window.open(`/dashboard/${guildId}`, "_blank");
-      
-      console.log(`✅ Admin session created and dashboard opened for guild ${guildId}`);
+
+      console.log(
+        `✅ Admin session created and dashboard opened for guild ${guildId}`,
+      );
     } catch (error) {
       console.error("Failed to generate admin session:", error);
-      alert("Fehler beim Erstellen der Admin-Session. Bitte versuchen Sie es erneut.");
+      alert(
+        "Fehler beim Erstellen der Admin-Session. Bitte versuchen Sie es erneut.",
+      );
     }
   };
 

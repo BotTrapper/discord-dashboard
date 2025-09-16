@@ -191,7 +191,7 @@ export default function DashboardLayout() {
         <main className="py-4 px-4 sm:py-6 sm:px-6 lg:py-8 lg:px-8 pt-16 lg:pt-8">
           {/* Admin Session Banner */}
           {guildId && <AdminSessionBanner guildId={guildId} />}
-          
+
           <Outlet />
         </main>
       </div>
