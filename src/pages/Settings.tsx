@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { authService } from "../lib/auth";
+import { api } from "../lib/api";
 import {
   Cog6ToothIcon,
   TicketIcon,
@@ -69,13 +69,9 @@ export default function Settings() {
 
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
-      const response = await authService.apiRequest(`/api/settings/${guildId}`);
+      const response = await api.get(`/api/settings/${guildId}`);
 
-      if (!response.ok) {
-        throw new Error("Failed to load settings");
-      }
-
-      const settings = await response.json();
+      const settings = response.data;
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -98,24 +94,15 @@ export default function Settings() {
       try {
         setState((prev) => ({ ...prev, saving: true, error: null }));
 
-        const response = await authService.apiRequest(
-          `/api/settings/${guildId}/features`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              features: featureUpdates,
-            }),
-          },
-        );
+        const response = await api.put(`/api/settings/${guildId}/features`, {
+          features: featureUpdates,
+        });
 
-        if (!response.ok) {
+        if (!response.data.success) {
           throw new Error("Failed to save settings");
         }
 
-        const result = await response.json();
+        const result = response.data;
 
         setState((prev) => ({
           ...prev,
