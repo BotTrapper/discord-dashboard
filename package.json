@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . && npx prettier --check \"src/**/*.{ts,tsx,css,json}\" --write",
     "preview": "vite preview",
     "type-check": "tsc --noEmit"
   },
