@@ -22,7 +22,11 @@ import {
 const navigation = [
   { name: "Dashboard", href: "", icon: HomeIcon },
   { name: "Tickets", href: "tickets", icon: TicketIcon },
-  { name: "Ticket Kategorien", href: "ticket-categories", icon: RectangleGroupIcon },
+  {
+    name: "Ticket Kategorien",
+    href: "ticket-categories",
+    icon: RectangleGroupIcon,
+  },
   {
     name: "Auto Responses",
     href: "autoresponses",

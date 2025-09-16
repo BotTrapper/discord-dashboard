@@ -116,43 +116,58 @@ class ApiService {
   }
 
   // Ticket Categories specific methods
-  async getTicketCategories(guildId: string, includeInactive = false): Promise<TicketCategory[]> {
+  async getTicketCategories(
+    guildId: string,
+    includeInactive = false,
+  ): Promise<TicketCategory[]> {
     const response = await this.get<TicketCategory[]>(
       `/api/ticket-categories/${guildId}?includeInactive=${includeInactive}`,
     );
     return response.data;
   }
 
-  async createTicketCategory(guildId: string, data: {
-    name: string;
-    description?: string;
-    emoji?: string;
-    color?: string;
-    sortOrder?: number;
-  }): Promise<{ id: number; success: boolean }> {
+  async createTicketCategory(
+    guildId: string,
+    data: {
+      name: string;
+      description?: string;
+      emoji?: string;
+      color?: string;
+      sortOrder?: number;
+    },
+  ): Promise<{ id: number; success: boolean }> {
     const response = await this.post<{ id: number; success: boolean }>(
-      `/api/ticket-categories/${guildId}`, data
+      `/api/ticket-categories/${guildId}`,
+      data,
     );
     return response.data;
   }
 
-  async updateTicketCategory(guildId: string, categoryId: number, data: {
-    name?: string;
-    description?: string;
-    emoji?: string;
-    color?: string;
-    isActive?: boolean;
-    sortOrder?: number;
-  }): Promise<{ success: boolean }> {
+  async updateTicketCategory(
+    guildId: string,
+    categoryId: number,
+    data: {
+      name?: string;
+      description?: string;
+      emoji?: string;
+      color?: string;
+      isActive?: boolean;
+      sortOrder?: number;
+    },
+  ): Promise<{ success: boolean }> {
     const response = await this.put<{ success: boolean }>(
-      `/api/ticket-categories/${guildId}/${categoryId}`, data
+      `/api/ticket-categories/${guildId}/${categoryId}`,
+      data,
     );
     return response.data;
   }
 
-  async deleteTicketCategory(guildId: string, categoryId: number): Promise<{ success: boolean }> {
+  async deleteTicketCategory(
+    guildId: string,
+    categoryId: number,
+  ): Promise<{ success: boolean }> {
     const response = await this.delete<{ success: boolean }>(
-      `/api/ticket-categories/${guildId}/${categoryId}`
+      `/api/ticket-categories/${guildId}/${categoryId}`,
     );
     return response.data;
   }
