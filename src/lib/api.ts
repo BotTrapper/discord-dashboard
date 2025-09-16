@@ -44,9 +44,14 @@ class ApiService {
     // Request interceptor to add auth token
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem("token");
+        // Try both possible token storage keys
+        const token = localStorage.getItem("token") || localStorage.getItem("discord_token");
         if (token) {
+          config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
+          console.log(`🔑 Adding Authorization header to ${config.method?.toUpperCase()} ${config.url}`);
+        } else {
+          console.log(`❌ No token found in localStorage for ${config.method?.toUpperCase()} ${config.url}`);
         }
 
         // Add admin session token if available
@@ -57,6 +62,7 @@ class ApiService {
             `admin-session-${guildId}`,
           );
           if (adminSessionToken) {
+            config.headers = config.headers || {};
             config.headers["x-admin-session"] = adminSessionToken;
             console.log(`🔑 Using admin session token for guild ${guildId}`);
           }
@@ -198,7 +204,7 @@ class ApiService {
       guildId: string;
       adminLevel: number;
       expiresAt: number;
-    }>(`/api/admin/session/${guildId}`);
+    }>(`/api/admin/session/${guildId}`, {});
 
     // Store session token for automatic use
     localStorage.setItem(
