@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../lib/api';
 import { useParams } from 'react-router-dom';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -38,13 +38,7 @@ const TicketCategories: React.FC = () => {
     sortOrder: 0
   });
 
-  useEffect(() => {
-    if (guildId) {
-      loadCategories();
-    }
-  }, [guildId]);
-
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     if (!guildId) return;
 
     try {
@@ -56,7 +50,13 @@ const TicketCategories: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [guildId]);
+
+  useEffect(() => {
+    if (guildId) {
+      loadCategories();
+    }
+  }, [guildId, loadCategories]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
