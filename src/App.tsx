@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import GuildSelection from "./pages/GuildSelection";
 import Dashboard from "./pages/Dashboard";
 import Tickets from "./pages/Tickets";
+import TicketCategories from "./pages/TicketCategories";
 import AutoResponses from "./pages/AutoResponses";
 import Settings from "./pages/Settings";
 import Permissions from "./pages/Permissions";
@@ -68,6 +69,7 @@ function App() {
             >
               <Route index element={<Dashboard />} />
               <Route path="tickets" element={<Tickets />} />
+              <Route path="ticket-categories" element={<TicketCategories />} />
               <Route path="autoresponses" element={<AutoResponses />} />
               <Route
                 path="statistics"
