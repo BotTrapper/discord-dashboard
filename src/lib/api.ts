@@ -45,13 +45,19 @@ class ApiService {
     this.axiosInstance.interceptors.request.use(
       (config) => {
         // Try both possible token storage keys
-        const token = localStorage.getItem("token") || localStorage.getItem("discord_token");
+        const token =
+          localStorage.getItem("token") ||
+          localStorage.getItem("discord_token");
         if (token) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
-          console.log(`🔑 Adding Authorization header to ${config.method?.toUpperCase()} ${config.url}`);
+          console.log(
+            `🔑 Adding Authorization header to ${config.method?.toUpperCase()} ${config.url}`,
+          );
         } else {
-          console.log(`❌ No token found in localStorage for ${config.method?.toUpperCase()} ${config.url}`);
+          console.log(
+            `❌ No token found in localStorage for ${config.method?.toUpperCase()} ${config.url}`,
+          );
         }
 
         // Add admin session token if available
