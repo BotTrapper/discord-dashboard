@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { authService } from "../lib/auth";
+import { api } from "../lib/api";
 import {
   CogIcon,
   UserGroupIcon,
@@ -80,6 +81,24 @@ export default function AdminPanel() {
     type: "string",
     description: "",
   });
+
+  // Admin session management
+  const handleOpenGuildDashboard = async (guildId: string) => {
+    try {
+      console.log(`🔑 Generating admin session for guild ${guildId}...`);
+      
+      // Generate admin session token
+      await api.generateAdminSession(guildId);
+      
+      // Open guild dashboard in new tab
+      window.open(`/dashboard/${guildId}`, "_blank");
+      
+      console.log(`✅ Admin session created and dashboard opened for guild ${guildId}`);
+    } catch (error) {
+      console.error("Failed to generate admin session:", error);
+      alert("Fehler beim Erstellen der Admin-Session. Bitte versuchen Sie es erneut.");
+    }
+  };
 
   useEffect(() => {
     loadData();
@@ -783,12 +802,11 @@ export default function AdminPanel() {
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() =>
-                            window.open(`/dashboard/${guild.id}`, "_blank")
-                          }
+                          onClick={() => handleOpenGuildDashboard(guild.id)}
                           className="flex-1 px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                          title="Dashboard mit Admin-Berechtigung öffnen"
                         >
-                          Dashboard öffnen
+                          🔑 Admin Dashboard
                         </button>
                         <button
                           onClick={() =>

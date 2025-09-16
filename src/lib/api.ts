@@ -48,6 +48,18 @@ class ApiService {
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Add admin session token if available
+        const guildIdMatch = config.url?.match(/\/(\d+)(?:\/|$)/);
+        if (guildIdMatch) {
+          const guildId = guildIdMatch[1];
+          const adminSessionToken = localStorage.getItem(`admin-session-${guildId}`);
+          if (adminSessionToken) {
+            config.headers['x-admin-session'] = adminSessionToken;
+            console.log(`🔑 Using admin session token for guild ${guildId}`);
+          }
+        }
+        
         return config;
       },
       (error) => {
@@ -170,6 +182,72 @@ class ApiService {
       `/api/ticket-categories/${guildId}/${categoryId}`,
     );
     return response.data;
+  }
+
+  // Admin Session Management
+  async generateAdminSession(guildId: string): Promise<{
+    sessionToken: string;
+    guildId: string;
+    adminLevel: number;
+    expiresAt: number;
+  }> {
+    const response = await this.post<{
+      sessionToken: string;
+      guildId: string;
+      adminLevel: number;
+      expiresAt: number;
+    }>(`/api/admin/session/${guildId}`);
+    
+    // Store session token for automatic use
+    localStorage.setItem(`admin-session-${guildId}`, response.data.sessionToken);
+    console.log(`🔑 Generated admin session for guild ${guildId}`);
+    
+    return response.data;
+  }
+
+  async validateAdminSession(guildId: string): Promise<{
+    valid: boolean;
+    userId?: string;
+    adminLevel?: number;
+    expiresAt?: number;
+  }> {
+    const adminSessionToken = localStorage.getItem(`admin-session-${guildId}`);
+    if (!adminSessionToken) {
+      return { valid: false };
+    }
+
+    try {
+      // Temporarily add the header manually for validation
+      const originalHeaders = this.axiosInstance.defaults.headers;
+      this.axiosInstance.defaults.headers['x-admin-session'] = adminSessionToken;
+      
+      const response = await this.get<{
+        valid: boolean;
+        userId: string;
+        guildId: string;
+        adminLevel: number;
+        expiresAt: number;
+      }>(`/api/admin/session/validate/${guildId}`);
+      
+      // Restore original headers
+      this.axiosInstance.defaults.headers = originalHeaders;
+      
+      return response.data;
+    } catch (error) {
+      console.warn(`❌ Admin session validation failed for guild ${guildId}:`, error);
+      localStorage.removeItem(`admin-session-${guildId}`);
+      return { valid: false };
+    }
+  }
+
+  clearAdminSession(guildId: string): void {
+    localStorage.removeItem(`admin-session-${guildId}`);
+    console.log(`🗑️ Cleared admin session for guild ${guildId}`);
+  }
+
+  // Check if user has admin session for guild
+  hasAdminSession(guildId: string): boolean {
+    return !!localStorage.getItem(`admin-session-${guildId}`);
   }
 }
 

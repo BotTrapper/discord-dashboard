@@ -3,6 +3,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import { authService } from "../lib/auth";
 import { useState } from "react";
 import Footer from "./Footer";
+import { AdminSessionBanner } from "./AdminSessionBanner";
 import {
   HomeIcon,
   TicketIcon,
@@ -188,6 +189,9 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div className="lg:pl-64 pl-0">
         <main className="py-4 px-4 sm:py-6 sm:px-6 lg:py-8 lg:px-8 pt-16 lg:pt-8">
+          {/* Admin Session Banner */}
+          {guildId && <AdminSessionBanner guildId={guildId} />}
+          
           <Outlet />
         </main>
       </div>
