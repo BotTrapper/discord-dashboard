@@ -16,6 +16,8 @@ import Dashboard from "./pages/Dashboard";
 import Tickets from "./pages/Tickets";
 import TicketCategories from "./pages/TicketCategories";
 import AutoResponses from "./pages/AutoResponses";
+import AutoRoles from "./pages/AutoRoles";
+import CommandPermissions from "./pages/CommandPermissions";
 import Settings from "./pages/Settings";
 import Permissions from "./pages/Permissions";
 import Changelog from "./pages/Changelog";
@@ -71,6 +73,11 @@ function App() {
               <Route path="tickets" element={<Tickets />} />
               <Route path="ticket-categories" element={<TicketCategories />} />
               <Route path="autoresponses" element={<AutoResponses />} />
+              <Route path="autoroles" element={<AutoRoles />} />
+              <Route
+                path="command-permissions"
+                element={<CommandPermissions />}
+              />
               <Route
                 path="statistics"
                 element={

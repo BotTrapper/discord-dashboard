@@ -18,6 +18,7 @@ import {
   XMarkIcon,
   DocumentTextIcon,
   RectangleGroupIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -32,6 +33,16 @@ const navigation = [
     name: "Auto Responses",
     href: "autoresponses",
     icon: ChatBubbleLeftRightIcon,
+  },
+  {
+    name: "Auto-Roles",
+    href: "autoroles",
+    icon: UserGroupIcon,
+  },
+  {
+    name: "Command Permissions",
+    href: "command-permissions",
+    icon: KeyIcon,
   },
   { name: "Statistics", href: "statistics", icon: ChartBarIcon },
   { name: "Berechtigungen", href: "permissions", icon: KeyIcon },
