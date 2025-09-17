@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../lib/api";
 
 interface Feature {
@@ -18,11 +18,7 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadFeatures();
-  }, [guildId]);
-
-  const loadFeatures = async () => {
+  const loadFeatures = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -34,7 +30,11 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [guildId]);
+
+  useEffect(() => {
+    loadFeatures();
+  }, [loadFeatures]);
 
   const toggleFeature = async (featureName: string, enabled: boolean) => {
     try {

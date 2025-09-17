@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { api } from "../lib/api";
@@ -44,13 +44,7 @@ const AutoRoles: React.FC = () => {
   const [isAddingRole, setIsAddingRole] = useState(false);
   const [showAllRoles, setShowAllRoles] = useState(false);
 
-  useEffect(() => {
-    if (guildId) {
-      fetchData();
-    }
-  }, [guildId, showAllRoles]); // Refetch when filter changes
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [autoRolesData, rolesData] = await Promise.all([
@@ -70,13 +64,20 @@ const AutoRoles: React.FC = () => {
         setRoles(rolesData.data);
         setBotInfo(null);
       }
+      setError(null);
     } catch (error: any) {
       console.error("Failed to fetch auto roles:", error);
       setError(error.response?.data?.error || "Failed to load auto roles");
     } finally {
       setLoading(false);
     }
-  };
+  }, [guildId, showAllRoles]);
+
+  useEffect(() => {
+    if (guildId) {
+      fetchData();
+    }
+  }, [fetchData]);
 
   const handleAddAutoRole = async () => {
     const selectedRole = roles.find((r) => r.id === selectedRoleId);

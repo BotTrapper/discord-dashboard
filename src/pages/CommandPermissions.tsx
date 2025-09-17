@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { api } from "../lib/api";
@@ -45,13 +45,7 @@ const CommandPermissions: React.FC = () => {
     deniedCommands: [],
   });
 
-  useEffect(() => {
-    if (guildId) {
-      fetchData();
-    }
-  }, [guildId]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [rolesData, commandsData, permissionsData] = await Promise.all([
@@ -67,15 +61,20 @@ const CommandPermissions: React.FC = () => {
       );
       setCommands(commandsData.data);
       setCommandPermissions(permissionsData.data);
+      setError(null);
     } catch (error: any) {
-      console.error("Failed to fetch command permissions:", error);
-      setError(
-        error.response?.data?.error || "Failed to load command permissions",
-      );
+      console.error("Error loading data:", error);
+      setError(error.response?.data?.error || "Fehler beim Laden der Daten");
     } finally {
       setLoading(false);
     }
-  };
+  }, [guildId]);
+
+  useEffect(() => {
+    if (guildId) {
+      fetchData();
+    }
+  }, [fetchData]);
 
   const handleEditRole = (roleId: string) => {
     const existingPermissions = commandPermissions.find(
