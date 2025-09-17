@@ -53,7 +53,7 @@ const FEATURE_ICONS = {
 
 const FEATURE_COLORS = {
   tickets: "text-blue-600 dark:text-blue-400",
-  autoresponses: "text-green-600 dark:text-green-400", 
+  autoresponses: "text-green-600 dark:text-green-400",
   statistics: "text-purple-600 dark:text-purple-400",
   autoroles: "text-orange-600 dark:text-orange-400",
 };
@@ -61,7 +61,7 @@ const FEATURE_COLORS = {
 const FEATURE_BG_COLORS = {
   tickets: "bg-blue-50 dark:bg-blue-900/20",
   autoresponses: "bg-green-50 dark:bg-green-900/20",
-  statistics: "bg-purple-50 dark:bg-purple-900/20", 
+  statistics: "bg-purple-50 dark:bg-purple-900/20",
   autoroles: "bg-orange-50 dark:bg-orange-900/20",
 };
 
@@ -79,75 +79,88 @@ export default function Settings() {
 
   const loadSettings = useCallback(async () => {
     if (!guildId) return;
-    
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      // Load features, notification settings, and roles in parallel
-      const [featuresResponse, notificationResponse, rolesResponse] = await Promise.all([
-        api.get(`/api/guilds/${guildId}/features`),
-        api.get(`/api/notifications/${guildId}/settings`),
-        api.get(`/api/discord/${guildId}/roles`),
-      ]);
 
-      setState(prev => ({
+    try {
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
+      // Load features, notification settings, and roles in parallel
+      const [featuresResponse, notificationResponse, rolesResponse] =
+        await Promise.all([
+          api.get(`/api/guilds/${guildId}/features`),
+          api.get(`/api/notifications/${guildId}/settings`),
+          api.get(`/api/discord/${guildId}/roles`),
+        ]);
+
+      setState((prev) => ({
         ...prev,
         loading: false,
         features: featuresResponse.data || [],
         notifications: notificationResponse.data || null,
-        roles: rolesResponse.data.roles?.filter((role: Role) => 
-          role.id !== guildId && !role.managed
-        ) || [],
+        roles:
+          rolesResponse.data.roles?.filter(
+            (role: Role) => role.id !== guildId && !role.managed,
+          ) || [],
       }));
     } catch (err: any) {
-      console.error('Failed to load settings:', err);
-      setState(prev => ({
+      console.error("Failed to load settings:", err);
+      setState((prev) => ({
         ...prev,
         loading: false,
-        error: err.response?.data?.error || 'Fehler beim Laden der Einstellungen',
+        error:
+          err.response?.data?.error || "Fehler beim Laden der Einstellungen",
       }));
     }
   }, [guildId]);
 
-  const updateNotificationSettings = useCallback(async (updates: Partial<NotificationSettings>) => {
-    if (!guildId) return;
+  const updateNotificationSettings = useCallback(
+    async (updates: Partial<NotificationSettings>) => {
+      if (!guildId) return;
 
-    try {
-      setState(prev => ({ ...prev, testingNotification: true }));
-      
-      const response = await api.put(`/api/notifications/${guildId}/settings`, updates);
-      
-      setState(prev => ({
-        ...prev,
-        notifications: response.data,
-        testingNotification: false,
-      }));
-    } catch (err: any) {
-      console.error('Failed to update notification settings:', err);
-      setState(prev => ({
-        ...prev,
-        testingNotification: false,
-        error: err.response?.data?.error || 'Fehler beim Aktualisieren der Notification-Einstellungen',
-      }));
-    }
-  }, [guildId]);
+      try {
+        setState((prev) => ({ ...prev, testingNotification: true }));
+
+        const response = await api.put(
+          `/api/notifications/${guildId}/settings`,
+          updates,
+        );
+
+        setState((prev) => ({
+          ...prev,
+          notifications: response.data,
+          testingNotification: false,
+        }));
+      } catch (err: any) {
+        console.error("Failed to update notification settings:", err);
+        setState((prev) => ({
+          ...prev,
+          testingNotification: false,
+          error:
+            err.response?.data?.error ||
+            "Fehler beim Aktualisieren der Notification-Einstellungen",
+        }));
+      }
+    },
+    [guildId],
+  );
 
   const sendTestNotification = useCallback(async () => {
     if (!guildId) return;
 
     try {
-      setState(prev => ({ ...prev, testingNotification: true }));
-      
+      setState((prev) => ({ ...prev, testingNotification: true }));
+
       await api.post(`/api/notifications/${guildId}/test`);
-      
+
       // Success feedback - could add a toast/notification here
-      setState(prev => ({ ...prev, testingNotification: false }));
+      setState((prev) => ({ ...prev, testingNotification: false }));
     } catch (err: any) {
-      console.error('Failed to send test notification:', err);
-      setState(prev => ({
+      console.error("Failed to send test notification:", err);
+      setState((prev) => ({
         ...prev,
         testingNotification: false,
-        error: err.response?.data?.error || 'Fehler beim Senden der Test-Notification',
+        error:
+          err.response?.data?.error ||
+          "Fehler beim Senden der Test-Notification",
       }));
     }
   }, [guildId]);
@@ -160,19 +173,21 @@ export default function Settings() {
         setState((prev) => ({ ...prev, saving: true, error: null }));
 
         await api.put(`/api/guilds/${guildId}/features/${featureName}`, {
-          enabled
+          enabled,
         });
 
         // Update local state
         setState((prev) => ({
           ...prev,
           saving: false,
-          features: prev.features.map(f => 
-            f.name === featureName ? { ...f, enabled } : f
-          )
+          features: prev.features.map((f) =>
+            f.name === featureName ? { ...f, enabled } : f,
+          ),
         }));
 
-        console.log(`✅ Feature ${featureName} ${enabled ? 'aktiviert' : 'deaktiviert'}`);
+        console.log(
+          `✅ Feature ${featureName} ${enabled ? "aktiviert" : "deaktiviert"}`,
+        );
       } catch (err) {
         console.error("Error toggling feature:", err);
         setState((prev) => ({
@@ -183,9 +198,9 @@ export default function Settings() {
         // Revert local state on error
         setState((prev) => ({
           ...prev,
-          features: prev.features.map(f => 
-            f.name === featureName ? { ...f, enabled: !enabled } : f
-          )
+          features: prev.features.map((f) =>
+            f.name === featureName ? { ...f, enabled: !enabled } : f,
+          ),
         }));
       }
     },
@@ -247,16 +262,23 @@ export default function Settings() {
               🔧 Bot Features
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Aktiviere oder deaktiviere verschiedene Bot-Funktionen für diesen Server
+              Aktiviere oder deaktiviere verschiedene Bot-Funktionen für diesen
+              Server
             </p>
           </div>
 
           <div className="p-6">
             <div className="space-y-6">
               {state.features.map((feature) => {
-                const IconComponent = FEATURE_ICONS[feature.name as keyof typeof FEATURE_ICONS];
-                const colorClass = FEATURE_COLORS[feature.name as keyof typeof FEATURE_COLORS] || "text-gray-600 dark:text-gray-400";
-                const bgColorClass = FEATURE_BG_COLORS[feature.name as keyof typeof FEATURE_BG_COLORS] || "bg-gray-50 dark:bg-gray-700";
+                const IconComponent =
+                  FEATURE_ICONS[feature.name as keyof typeof FEATURE_ICONS];
+                const colorClass =
+                  FEATURE_COLORS[feature.name as keyof typeof FEATURE_COLORS] ||
+                  "text-gray-600 dark:text-gray-400";
+                const bgColorClass =
+                  FEATURE_BG_COLORS[
+                    feature.name as keyof typeof FEATURE_BG_COLORS
+                  ] || "bg-gray-50 dark:bg-gray-700";
 
                 return (
                   <div
@@ -266,9 +288,7 @@ export default function Settings() {
                     <div className="flex items-center space-x-4">
                       <div className={`p-3 rounded-lg ${bgColorClass}`}>
                         {IconComponent && (
-                          <IconComponent
-                            className={`h-6 w-6 ${colorClass}`}
-                          />
+                          <IconComponent className={`h-6 w-6 ${colorClass}`} />
                         )}
                       </div>
                       <div>
@@ -282,17 +302,21 @@ export default function Settings() {
                     </div>
 
                     <div className="flex items-center space-x-3">
-                      <span className={`text-xs font-medium px-3 py-1 rounded-full ${
-                        feature.enabled
-                          ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                      }`}>
-                        {feature.enabled ? 'Aktiviert' : 'Deaktiviert'}
+                      <span
+                        className={`text-xs font-medium px-3 py-1 rounded-full ${
+                          feature.enabled
+                            ? "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300"
+                            : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
+                        }`}
+                      >
+                        {feature.enabled ? "Aktiviert" : "Deaktiviert"}
                       </span>
 
                       <button
                         type="button"
-                        onClick={() => toggleFeature(feature.name, !feature.enabled)}
+                        onClick={() =>
+                          toggleFeature(feature.name, !feature.enabled)
+                        }
                         disabled={state.saving}
                         className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
                           feature.enabled
@@ -342,8 +366,18 @@ export default function Settings() {
                 <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-green-100 dark:bg-green-800 rounded-lg">
-                      <svg className="h-5 w-5 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="h-5 w-5 text-green-600 dark:text-green-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -360,7 +394,7 @@ export default function Settings() {
                     disabled={state.testingNotification}
                     className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400 rounded-md transition-colors"
                   >
-                    {state.testingNotification ? 'Sende...' : 'Test senden'}
+                    {state.testingNotification ? "Sende..." : "Test senden"}
                   </button>
                 </div>
 
@@ -371,25 +405,41 @@ export default function Settings() {
                   </label>
                   <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-md p-3">
                     {state.roles.map((role) => (
-                      <label key={role.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+                      <label
+                        key={role.id}
+                        className="flex items-center space-x-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
+                      >
                         <input
                           type="checkbox"
-                          checked={state.notifications?.notificationRoles?.includes(role.id) || false}
+                          checked={
+                            state.notifications?.notificationRoles?.includes(
+                              role.id,
+                            ) || false
+                          }
                           onChange={(e) => {
-                            const currentRoles = state.notifications?.notificationRoles || [];
+                            const currentRoles =
+                              state.notifications?.notificationRoles || [];
                             const updatedRoles = e.target.checked
                               ? [...currentRoles, role.id]
-                              : currentRoles.filter((id: string) => id !== role.id);
-                            
-                            updateNotificationSettings({ notificationRoles: updatedRoles });
+                              : currentRoles.filter(
+                                  (id: string) => id !== role.id,
+                                );
+
+                            updateNotificationSettings({
+                              notificationRoles: updatedRoles,
+                            });
                           }}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                         />
                         <div
                           className="w-4 h-4 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: `#${role.color.toString(16).padStart(6, '0')}` }}
+                          style={{
+                            backgroundColor: `#${role.color.toString(16).padStart(6, "0")}`,
+                          }}
                         />
-                        <span className="text-sm text-gray-900 dark:text-gray-100">{role.name}</span>
+                        <span className="text-sm text-gray-900 dark:text-gray-100">
+                          {role.name}
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -407,9 +457,12 @@ export default function Settings() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => updateNotificationSettings({ 
-                      notificationsEnabled: !state.notifications?.notificationsEnabled 
-                    })}
+                    onClick={() =>
+                      updateNotificationSettings({
+                        notificationsEnabled:
+                          !state.notifications?.notificationsEnabled,
+                      })
+                    }
                     disabled={state.testingNotification}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
                       state.notifications?.notificationsEnabled
@@ -417,10 +470,14 @@ export default function Settings() {
                         : "bg-gray-200 dark:bg-gray-600"
                     } ${state.testingNotification ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    <span className="sr-only">Benachrichtigungen umschalten</span>
+                    <span className="sr-only">
+                      Benachrichtigungen umschalten
+                    </span>
                     <span
                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-200 shadow ring-0 transition duration-200 ease-in-out ${
-                        state.notifications?.notificationsEnabled ? "translate-x-5" : "translate-x-0"
+                        state.notifications?.notificationsEnabled
+                          ? "translate-x-5"
+                          : "translate-x-0"
                       }`}
                     />
                   </button>
@@ -430,25 +487,44 @@ export default function Settings() {
               /* Setup Required */
               <div className="text-center py-8">
                 <div className="mx-auto h-16 w-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
-                  <svg className="h-8 w-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  <svg
+                    className="h-8 w-8 text-yellow-600 dark:text-yellow-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
                   </svg>
                 </div>
                 <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
                   Notification System Setup erforderlich
                 </h3>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                  Das Bot-Notification System ist noch nicht eingerichtet. 
-                  <br /><br />
+                  Das Bot-Notification System ist noch nicht eingerichtet.
+                  <br />
+                  <br />
                   <strong>Setup-Anleitung:</strong>
-                  <br />1. Gehe zu Discord
-                  <br />2. Verwende den Slash Command: <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">/bottrapper setup</code>
-                  <br />3. Wähle einen Text-Channel für Info-Nachrichten
+                  <br />
+                  1. Gehe zu Discord
+                  <br />
+                  2. Verwende den Slash Command:{" "}
+                  <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">
+                    /bottrapper setup
+                  </code>
+                  <br />
+                  3. Wähle einen Text-Channel für Info-Nachrichten
                 </p>
                 <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
                   <p className="text-xs text-blue-700 dark:text-blue-300">
-                    <strong>Hinweis:</strong> Nur der Server-Owner kann das Setup durchführen.
-                    <br />Du kannst die Channel-Berechtigungen selbst verwalten.
+                    <strong>Hinweis:</strong> Nur der Server-Owner kann das
+                    Setup durchführen.
+                    <br />
+                    Du kannst die Channel-Berechtigungen selbst verwalten.
                   </p>
                 </div>
               </div>
@@ -466,10 +542,22 @@ export default function Settings() {
               </h3>
               <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Slash Commands werden automatisch basierend auf aktivierten Features registriert</li>
-                  <li>Das Deaktivieren von Features entfernt die entsprechenden Commands aus Discord</li>
-                  <li>Änderungen werden sofort wirksam und erfordern keinen Bot-Neustart</li>
-                  <li>Deaktivierte Features sind für Server-Mitglieder nicht sichtbar oder nutzbar</li>
+                  <li>
+                    Slash Commands werden automatisch basierend auf aktivierten
+                    Features registriert
+                  </li>
+                  <li>
+                    Das Deaktivieren von Features entfernt die entsprechenden
+                    Commands aus Discord
+                  </li>
+                  <li>
+                    Änderungen werden sofort wirksam und erfordern keinen
+                    Bot-Neustart
+                  </li>
+                  <li>
+                    Deaktivierte Features sind für Server-Mitglieder nicht
+                    sichtbar oder nutzbar
+                  </li>
                 </ul>
               </div>
             </div>

@@ -78,12 +78,14 @@ export default function Permissions() {
     {
       id: "tickets.add_users",
       label: "User zu Tickets hinzufügen",
-      description: "Kann User und Rollen zu Tickets hinzufügen (Befehl: /ticket add)",
+      description:
+        "Kann User und Rollen zu Tickets hinzufügen (Befehl: /ticket add)",
     },
     {
       id: "tickets.remove_users",
       label: "User aus Tickets entfernen",
-      description: "Kann User und Rollen aus Tickets entfernen (Befehl: /ticket remove)",
+      description:
+        "Kann User und Rollen aus Tickets entfernen (Befehl: /ticket remove)",
     },
     {
       id: "autoresponse.view",

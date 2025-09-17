@@ -55,11 +55,13 @@ const AutoRoles: React.FC = () => {
       setLoading(true);
       const [autoRolesData, rolesData] = await Promise.all([
         api.get(`/api/autoroles/${guildId}`),
-        api.get(`/api/discord/${guildId}/roles?assignableOnly=${!showAllRoles}`),
+        api.get(
+          `/api/discord/${guildId}/roles?assignableOnly=${!showAllRoles}`,
+        ),
       ]);
 
       setAutoRoles(autoRolesData.data);
-      
+
       if (rolesData.data.roles) {
         setRoles(rolesData.data.roles);
         setBotInfo(rolesData.data.botInfo);
@@ -194,44 +196,67 @@ const AutoRoles: React.FC = () => {
 
         {/* Bot Hierarchy Info */}
         {botInfo && (
-          <div className={`rounded-lg p-4 mb-6 ${
-            botInfo.hasManageRoles 
-              ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
-              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-          }`}>
+          <div
+            className={`rounded-lg p-4 mb-6 ${
+              botInfo.hasManageRoles
+                ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+            }`}
+          >
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className={`text-xl ${
-                  botInfo.hasManageRoles ? 'text-blue-500' : 'text-red-500'
-                }`}>
-                  {botInfo.hasManageRoles ? '🤖' : '⚠️'}
+                <span
+                  className={`text-xl ${
+                    botInfo.hasManageRoles ? "text-blue-500" : "text-red-500"
+                  }`}
+                >
+                  {botInfo.hasManageRoles ? "🤖" : "⚠️"}
                 </span>
               </div>
               <div className="ml-3">
-                <h3 className={`text-sm font-medium ${
-                  botInfo.hasManageRoles 
-                    ? 'text-blue-800 dark:text-blue-200'
-                    : 'text-red-800 dark:text-red-200'
-                }`}>
-                  {botInfo.hasManageRoles ? 'Bot-Hierarchie Status' : 'Bot-Permission Problem'}
+                <h3
+                  className={`text-sm font-medium ${
+                    botInfo.hasManageRoles
+                      ? "text-blue-800 dark:text-blue-200"
+                      : "text-red-800 dark:text-red-200"
+                  }`}
+                >
+                  {botInfo.hasManageRoles
+                    ? "Bot-Hierarchie Status"
+                    : "Bot-Permission Problem"}
                 </h3>
-                <div className={`mt-2 text-sm ${
-                  botInfo.hasManageRoles 
-                    ? 'text-blue-700 dark:text-blue-300'
-                    : 'text-red-700 dark:text-red-300'
-                }`}>
+                <div
+                  className={`mt-2 text-sm ${
+                    botInfo.hasManageRoles
+                      ? "text-blue-700 dark:text-blue-300"
+                      : "text-red-700 dark:text-red-300"
+                  }`}
+                >
                   {botInfo.hasManageRoles ? (
                     <div>
-                      <p className="mb-2">✅ Bot hat "Manage Roles" Permission</p>
-                      <p>🎭 Bot's höchste Rolle: <strong>{botInfo.highestRoleName}</strong> (Position {botInfo.highestRolePosition})</p>
+                      <p className="mb-2">
+                        ✅ Bot hat "Manage Roles" Permission
+                      </p>
+                      <p>
+                        🎭 Bot's höchste Rolle:{" "}
+                        <strong>{botInfo.highestRoleName}</strong> (Position{" "}
+                        {botInfo.highestRolePosition})
+                      </p>
                       <p className="mt-1">
-                        💡 Der Bot kann nur Rollen zuweisen, die <strong>niedriger in der Hierarchie</strong> stehen als seine eigene Rolle.
+                        💡 Der Bot kann nur Rollen zuweisen, die{" "}
+                        <strong>niedriger in der Hierarchie</strong> stehen als
+                        seine eigene Rolle.
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <p className="mb-2">❌ Bot hat keine "Manage Roles" Permission</p>
-                      <p>🔧 Gehe zu Discord → Server Settings → Roles → Bot-Rolle → Aktiviere "Manage Roles"</p>
+                      <p className="mb-2">
+                        ❌ Bot hat keine "Manage Roles" Permission
+                      </p>
+                      <p>
+                        🔧 Gehe zu Discord → Server Settings → Roles → Bot-Rolle
+                        → Aktiviere "Manage Roles"
+                      </p>
                     </div>
                   )}
                 </div>
@@ -253,20 +278,20 @@ const AutoRoles: React.FC = () => {
               <button
                 onClick={() => setShowAllRoles(!showAllRoles)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                  showAllRoles
-                    ? 'bg-blue-600'
-                    : 'bg-gray-200 dark:bg-gray-600'
+                  showAllRoles ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"
                 }`}
                 role="switch"
                 aria-checked={showAllRoles}
               >
                 <span className="sr-only">
-                  {showAllRoles ? 'Nur zuweisbare Rollen anzeigen' : 'Alle Rollen anzeigen'}
+                  {showAllRoles
+                    ? "Nur zuweisbare Rollen anzeigen"
+                    : "Alle Rollen anzeigen"}
                 </span>
                 <span
                   aria-hidden="true"
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    showAllRoles ? 'translate-x-5' : 'translate-x-0'
+                    showAllRoles ? "translate-x-5" : "translate-x-0"
                   }`}
                 />
               </button>
@@ -298,15 +323,15 @@ const AutoRoles: React.FC = () => {
               >
                 <option value="">Rolle auswählen...</option>
                 {availableRoles.map((role) => (
-                  <option 
-                    key={role.id} 
+                  <option
+                    key={role.id}
                     value={role.id}
                     disabled={role.assignable === false}
-                    className={role.assignable === false ? 'text-gray-400' : ''}
+                    className={role.assignable === false ? "text-gray-400" : ""}
                   >
-                    {role.assignable === false ? '🚫 ' : ''}
+                    {role.assignable === false ? "🚫 " : ""}
                     {role.name}
-                    {role.assignable === false ? ' (nicht zuweisbar)' : ''}
+                    {role.assignable === false ? " (nicht zuweisbar)" : ""}
                   </option>
                 ))}
               </select>

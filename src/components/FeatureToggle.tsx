@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+import { useState, useEffect } from "react";
+import { api } from "../lib/api";
 
 interface Feature {
   name: string;
@@ -29,8 +29,8 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
       const response = await api.get(`/api/guilds/${guildId}/features`);
       setFeatures(response.data);
     } catch (error) {
-      console.error('Error loading features:', error);
-      setError('Fehler beim Laden der Features');
+      console.error("Error loading features:", error);
+      setError("Fehler beim Laden der Features");
     } finally {
       setLoading(false);
     }
@@ -40,29 +40,35 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
     try {
       setUpdating(featureName);
       setError(null);
-      
+
       await api.put(`/api/guilds/${guildId}/features/${featureName}`, {
-        enabled
+        enabled,
       });
-      
+
       // Update local state
-      setFeatures(prev => prev.map(f => 
-        f.name === featureName ? { ...f, enabled } : f
-      ));
-      
+      setFeatures((prev) =>
+        prev.map((f) => (f.name === featureName ? { ...f, enabled } : f)),
+      );
+
       // Show success message briefly
-      const feature = features.find(f => f.name === featureName);
+      const feature = features.find((f) => f.name === featureName);
       if (feature) {
-        console.log(`✅ ${feature.displayName} ${enabled ? 'aktiviert' : 'deaktiviert'}`);
+        console.log(
+          `✅ ${feature.displayName} ${enabled ? "aktiviert" : "deaktiviert"}`,
+        );
       }
-      
     } catch (error: any) {
-      console.error('Error toggling feature:', error);
-      setError(error.response?.data?.error || 'Fehler beim Aktualisieren der Einstellung');
+      console.error("Error toggling feature:", error);
+      setError(
+        error.response?.data?.error ||
+          "Fehler beim Aktualisieren der Einstellung",
+      );
       // Revert local state on error
-      setFeatures(prev => prev.map(f => 
-        f.name === featureName ? { ...f, enabled: !enabled } : f
-      ));
+      setFeatures((prev) =>
+        prev.map((f) =>
+          f.name === featureName ? { ...f, enabled: !enabled } : f,
+        ),
+      );
     } finally {
       setUpdating(null);
     }
@@ -70,23 +76,33 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
 
   const getFeatureIcon = (featureName: string) => {
     switch (featureName) {
-      case 'autoroles': return '🎭';
-      case 'tickets': return '🎫';
-      case 'autoresponses': return '💬';
-      case 'statistics': return '📊';
-      default: return '⚙️';
+      case "autoroles":
+        return "🎭";
+      case "tickets":
+        return "🎫";
+      case "autoresponses":
+        return "💬";
+      case "statistics":
+        return "📊";
+      default:
+        return "⚙️";
     }
   };
 
   const getFeatureColor = (enabled: boolean, featureName: string) => {
-    if (!enabled) return 'text-gray-400 dark:text-gray-600';
-    
+    if (!enabled) return "text-gray-400 dark:text-gray-600";
+
     switch (featureName) {
-      case 'autoroles': return 'text-purple-600 dark:text-purple-400';
-      case 'tickets': return 'text-blue-600 dark:text-blue-400';
-      case 'autoresponses': return 'text-green-600 dark:text-green-400';
-      case 'statistics': return 'text-orange-600 dark:text-orange-400';
-      default: return 'text-gray-600 dark:text-gray-400';
+      case "autoroles":
+        return "text-purple-600 dark:text-purple-400";
+      case "tickets":
+        return "text-blue-600 dark:text-blue-400";
+      case "autoresponses":
+        return "text-green-600 dark:text-green-400";
+      case "statistics":
+        return "text-orange-600 dark:text-orange-400";
+      default:
+        return "text-gray-600 dark:text-gray-400";
     }
   };
 
@@ -95,7 +111,9 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
       <div className="space-y-4">
         <div className="flex items-center">
           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
-          <span className="text-gray-600 dark:text-gray-300">Lade Feature-Einstellungen...</span>
+          <span className="text-gray-600 dark:text-gray-300">
+            Lade Feature-Einstellungen...
+          </span>
         </div>
       </div>
     );
@@ -108,7 +126,8 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
           🔧 Bot Features
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Aktiviere oder deaktiviere verschiedene Bot-Funktionen für diesen Server.
+          Aktiviere oder deaktiviere verschiedene Bot-Funktionen für diesen
+          Server.
         </p>
       </div>
 
@@ -133,7 +152,9 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className={`text-2xl ${getFeatureColor(feature.enabled, feature.name)}`}>
+                <span
+                  className={`text-2xl ${getFeatureColor(feature.enabled, feature.name)}`}
+                >
                   {getFeatureIcon(feature.name)}
                 </span>
                 <div>
@@ -147,12 +168,14 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
               </div>
 
               <div className="flex items-center space-x-3">
-                <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  feature.enabled
-                    ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                }`}>
-                  {feature.enabled ? 'Aktiviert' : 'Deaktiviert'}
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    feature.enabled
+                      ? "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
+                  }`}
+                >
+                  {feature.enabled ? "Aktiviert" : "Deaktiviert"}
                 </span>
 
                 <button
@@ -160,19 +183,20 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
                   disabled={updating === feature.name}
                   className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     feature.enabled
-                      ? 'bg-blue-600'
-                      : 'bg-gray-200 dark:bg-gray-600'
-                  } ${updating === feature.name ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      ? "bg-blue-600"
+                      : "bg-gray-200 dark:bg-gray-600"
+                  } ${updating === feature.name ? "opacity-50 cursor-not-allowed" : ""}`}
                   role="switch"
                   aria-checked={feature.enabled}
                 >
                   <span className="sr-only">
-                    {feature.enabled ? 'Deaktivieren' : 'Aktivieren'} {feature.displayName}
+                    {feature.enabled ? "Deaktivieren" : "Aktivieren"}{" "}
+                    {feature.displayName}
                   </span>
                   <span
                     aria-hidden="true"
                     className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      feature.enabled ? 'translate-x-5' : 'translate-x-0'
+                      feature.enabled ? "translate-x-5" : "translate-x-0"
                     }`}
                   />
                   {updating === feature.name && (
@@ -198,9 +222,18 @@ export default function FeatureToggle({ guildId }: FeatureToggleProps) {
             </h3>
             <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
               <ul className="list-disc list-inside space-y-1">
-                <li>Slash Commands werden automatisch basierend auf aktivierten Features registriert</li>
-                <li>Das Deaktivieren von Features entfernt die entsprechenden Commands aus Discord</li>
-                <li>Änderungen werden sofort wirksam und erfordern keinen Bot-Neustart</li>
+                <li>
+                  Slash Commands werden automatisch basierend auf aktivierten
+                  Features registriert
+                </li>
+                <li>
+                  Das Deaktivieren von Features entfernt die entsprechenden
+                  Commands aus Discord
+                </li>
+                <li>
+                  Änderungen werden sofort wirksam und erfordern keinen
+                  Bot-Neustart
+                </li>
               </ul>
             </div>
           </div>
