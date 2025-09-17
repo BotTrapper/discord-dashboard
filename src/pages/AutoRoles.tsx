@@ -19,33 +19,55 @@ interface Role {
   color: number;
   position: number;
   managed: boolean;
+  assignable?: boolean;
 }
+
+interface BotInfo {
+  hasManageRoles: boolean;
+  highestRolePosition: number;
+  highestRoleName: string;
+}
+
+// interface RolesResponse {
+//   roles: Role[];
+//   botInfo: BotInfo | null;
+// }
 
 const AutoRoles: React.FC = () => {
   const { guildId } = useParams<{ guildId: string }>();
   const [autoRoles, setAutoRoles] = useState<AutoRole[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
+  const [botInfo, setBotInfo] = useState<BotInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [isAddingRole, setIsAddingRole] = useState(false);
+  const [showAllRoles, setShowAllRoles] = useState(false);
 
   useEffect(() => {
     if (guildId) {
       fetchData();
     }
-  }, [guildId]);
+  }, [guildId, showAllRoles]); // Refetch when filter changes
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const [autoRolesData, rolesData] = await Promise.all([
         api.get(`/api/autoroles/${guildId}`),
-        api.get(`/api/guild/${guildId}/roles`),
+        api.get(`/api/discord/${guildId}/roles?assignableOnly=${!showAllRoles}`),
       ]);
 
       setAutoRoles(autoRolesData.data);
-      setRoles(rolesData.data);
+      
+      if (rolesData.data.roles) {
+        setRoles(rolesData.data.roles);
+        setBotInfo(rolesData.data.botInfo);
+      } else {
+        // Fallback for old API format
+        setRoles(rolesData.data);
+        setBotInfo(null);
+      }
     } catch (error: any) {
       console.error("Failed to fetch auto roles:", error);
       setError(error.response?.data?.error || "Failed to load auto roles");
@@ -170,6 +192,95 @@ const AutoRoles: React.FC = () => {
           </div>
         )}
 
+        {/* Bot Hierarchy Info */}
+        {botInfo && (
+          <div className={`rounded-lg p-4 mb-6 ${
+            botInfo.hasManageRoles 
+              ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
+              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+          }`}>
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <span className={`text-xl ${
+                  botInfo.hasManageRoles ? 'text-blue-500' : 'text-red-500'
+                }`}>
+                  {botInfo.hasManageRoles ? '🤖' : '⚠️'}
+                </span>
+              </div>
+              <div className="ml-3">
+                <h3 className={`text-sm font-medium ${
+                  botInfo.hasManageRoles 
+                    ? 'text-blue-800 dark:text-blue-200'
+                    : 'text-red-800 dark:text-red-200'
+                }`}>
+                  {botInfo.hasManageRoles ? 'Bot-Hierarchie Status' : 'Bot-Permission Problem'}
+                </h3>
+                <div className={`mt-2 text-sm ${
+                  botInfo.hasManageRoles 
+                    ? 'text-blue-700 dark:text-blue-300'
+                    : 'text-red-700 dark:text-red-300'
+                }`}>
+                  {botInfo.hasManageRoles ? (
+                    <div>
+                      <p className="mb-2">✅ Bot hat "Manage Roles" Permission</p>
+                      <p>🎭 Bot's höchste Rolle: <strong>{botInfo.highestRoleName}</strong> (Position {botInfo.highestRolePosition})</p>
+                      <p className="mt-1">
+                        💡 Der Bot kann nur Rollen zuweisen, die <strong>niedriger in der Hierarchie</strong> stehen als seine eigene Rolle.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="mb-2">❌ Bot hat keine "Manage Roles" Permission</p>
+                      <p>🔧 Gehe zu Discord → Server Settings → Roles → Bot-Rolle → Aktiviere "Manage Roles"</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Role Filter Options */}
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              Rollenfilter
+            </h3>
+            <div className="flex items-center space-x-3">
+              <label className="text-sm text-gray-700 dark:text-gray-300">
+                Alle Rollen anzeigen
+              </label>
+              <button
+                onClick={() => setShowAllRoles(!showAllRoles)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  showAllRoles
+                    ? 'bg-blue-600'
+                    : 'bg-gray-200 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={showAllRoles}
+              >
+                <span className="sr-only">
+                  {showAllRoles ? 'Nur zuweisbare Rollen anzeigen' : 'Alle Rollen anzeigen'}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    showAllRoles ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            {showAllRoles ? (
+              <p>🔍 Zeige alle Rollen (inklusive nicht zuweisbarer Rollen)</p>
+            ) : (
+              <p>✅ Zeige nur Rollen, die der Bot zuweisen kann</p>
+            )}
+          </div>
+        </div>
+
         {/* Add new auto role */}
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
@@ -187,8 +298,15 @@ const AutoRoles: React.FC = () => {
               >
                 <option value="">Rolle auswählen...</option>
                 {availableRoles.map((role) => (
-                  <option key={role.id} value={role.id}>
+                  <option 
+                    key={role.id} 
+                    value={role.id}
+                    disabled={role.assignable === false}
+                    className={role.assignable === false ? 'text-gray-400' : ''}
+                  >
+                    {role.assignable === false ? '🚫 ' : ''}
                     {role.name}
+                    {role.assignable === false ? ' (nicht zuweisbar)' : ''}
                   </option>
                 ))}
               </select>

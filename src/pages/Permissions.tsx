@@ -76,6 +76,16 @@ export default function Permissions() {
       description: "Kann Tickets erstellen, bearbeiten und löschen",
     },
     {
+      id: "tickets.add_users",
+      label: "User zu Tickets hinzufügen",
+      description: "Kann User und Rollen zu Tickets hinzufügen (Befehl: /ticket add)",
+    },
+    {
+      id: "tickets.remove_users",
+      label: "User aus Tickets entfernen",
+      description: "Kann User und Rollen aus Tickets entfernen (Befehl: /ticket remove)",
+    },
+    {
       id: "autoresponse.view",
       label: "Auto-Responses anzeigen",
       description: "Kann Auto-Response-Einstellungen einsehen",
