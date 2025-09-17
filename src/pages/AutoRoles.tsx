@@ -77,7 +77,7 @@ const AutoRoles: React.FC = () => {
     if (guildId) {
       fetchData();
     }
-  }, [fetchData]);
+  }, [fetchData, guildId]);
 
   const handleAddAutoRole = async () => {
     const selectedRole = roles.find((r) => r.id === selectedRoleId);

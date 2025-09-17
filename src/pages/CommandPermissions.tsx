@@ -74,7 +74,7 @@ const CommandPermissions: React.FC = () => {
     if (guildId) {
       fetchData();
     }
-  }, [fetchData]);
+  }, [fetchData, guildId]);
 
   const handleEditRole = (roleId: string) => {
     const existingPermissions = commandPermissions.find(
