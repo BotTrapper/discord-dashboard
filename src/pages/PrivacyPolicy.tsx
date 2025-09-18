@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const PrivacyPolicy: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const PrivacyPolicy: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
             Privacy Policy (Datenschutzerklärung)
           </h1>
-          
+
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
             <strong>Zuletzt aktualisiert:</strong> 18.09.2025
           </p>
@@ -19,12 +19,18 @@ const PrivacyPolicy: React.FC = () => {
                 1. Verantwortlicher
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
-                Verantwortlich für die Datenverarbeitung ist:<br />
+                Verantwortlich für die Datenverarbeitung ist:
+                <br />
                 <strong>BotTrapper</strong>
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
-                <li><strong>E-Mail:</strong> support@bottrapper.me</li>
-                <li><strong>Discord:</strong> Support über den offiziellen BotTrapper Discord-Server</li>
+                <li>
+                  <strong>E-Mail:</strong> support@bottrapper.me
+                </li>
+                <li>
+                  <strong>Discord:</strong> Support über den offiziellen
+                  BotTrapper Discord-Server
+                </li>
               </ul>
             </section>
 
@@ -37,10 +43,16 @@ const PrivacyPolicy: React.FC = () => {
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
                 <li>Discord-Benutzer-IDs und Server-IDs</li>
-                <li>Nachrichteninhalte, falls sie für Ticketfunktionen gespeichert werden</li>
+                <li>
+                  Nachrichteninhalte, falls sie für Ticketfunktionen gespeichert
+                  werden
+                </li>
                 <li>Zeitstempel von Interaktionen</li>
                 <li>Log-Daten zur Fehlerbehebung</li>
-                <li>Audit-Informationen (z. B. wer ein Ticket erstellt oder geschlossen hat)</li>
+                <li>
+                  Audit-Informationen (z. B. wer ein Ticket erstellt oder
+                  geschlossen hat)
+                </li>
               </ul>
             </section>
 
@@ -65,22 +77,31 @@ const PrivacyPolicy: React.FC = () => {
               </h2>
               <div className="space-y-3">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Ticket-Inhalte:</strong> werden <strong>60 Tage</strong> nach Schließen des Tickets automatisch gelöscht
+                  <strong>Ticket-Inhalte:</strong> werden{" "}
+                  <strong>60 Tage</strong> nach Schließen des Tickets
+                  automatisch gelöscht
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Fehler- und Debug-Logs:</strong> werden nach <strong>21 Tagen</strong> automatisch gelöscht
+                  <strong>Fehler- und Debug-Logs:</strong> werden nach{" "}
+                  <strong>21 Tagen</strong> automatisch gelöscht
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Moderationsdaten (z. B. Bans, Mutes):</strong> werden nur so lange gespeichert, wie die Maßnahme aktiv ist, danach gelöscht
+                  <strong>Moderationsdaten (z. B. Bans, Mutes):</strong> werden
+                  nur so lange gespeichert, wie die Maßnahme aktiv ist, danach
+                  gelöscht
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Audit-Logs:</strong> werden nach <strong>90 Tagen</strong> automatisch gelöscht
+                  <strong>Audit-Logs:</strong> werden nach{" "}
+                  <strong>90 Tagen</strong> automatisch gelöscht
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Statistische Daten:</strong> werden nur anonymisiert dauerhaft gespeichert, sodass keine Rückschlüsse auf einzelne Nutzer möglich sind
+                  <strong>Statistische Daten:</strong> werden nur anonymisiert
+                  dauerhaft gespeichert, sodass keine Rückschlüsse auf einzelne
+                  Nutzer möglich sind
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>Temporäre Caches (z. B. Discord-Nutzernamen):</strong> werden innerhalb weniger Stunden automatisch verworfen
+                  <strong>Temporäre Caches (z. B. Discord-Nutzernamen):</strong>{" "}
+                  werden innerhalb weniger Stunden automatisch verworfen
                 </p>
               </div>
             </section>
@@ -90,7 +111,9 @@ const PrivacyPolicy: React.FC = () => {
                 5. Weitergabe an Dritte
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Daten werden nicht an Dritte weitergegeben, außer wenn dies gesetzlich vorgeschrieben ist oder technisch notwendig (z. B. Hosting-Provider).
+                Daten werden nicht an Dritte weitergegeben, außer wenn dies
+                gesetzlich vorgeschrieben ist oder technisch notwendig (z. B.
+                Hosting-Provider).
               </p>
             </section>
 
@@ -102,8 +125,14 @@ const PrivacyPolicy: React.FC = () => {
                 Rechtsgrundlage der Verarbeitung ist:
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4">
-                <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong> (Erfüllung eines Vertrags)</li>
-                <li><strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (berechtigtes Interesse an einem sicheren und funktionierenden Service)</li>
+                <li>
+                  <strong>Art. 6 Abs. 1 lit. b DSGVO</strong> (Erfüllung eines
+                  Vertrags)
+                </li>
+                <li>
+                  <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (berechtigtes
+                  Interesse an einem sicheren und funktionierenden Service)
+                </li>
               </ul>
             </section>
 
@@ -115,10 +144,19 @@ const PrivacyPolicy: React.FC = () => {
                 Du hast jederzeit das Recht auf:
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 ml-4 mb-4">
-                <li><strong>Auskunft</strong> über gespeicherte Daten</li>
-                <li><strong>Berichtigung</strong> oder <strong>Löschung</strong> deiner Daten</li>
-                <li><strong>Einschränkung</strong> der Verarbeitung</li>
-                <li><strong>Widerspruch</strong> gegen die Verarbeitung</li>
+                <li>
+                  <strong>Auskunft</strong> über gespeicherte Daten
+                </li>
+                <li>
+                  <strong>Berichtigung</strong> oder <strong>Löschung</strong>{" "}
+                  deiner Daten
+                </li>
+                <li>
+                  <strong>Einschränkung</strong> der Verarbeitung
+                </li>
+                <li>
+                  <strong>Widerspruch</strong> gegen die Verarbeitung
+                </li>
               </ul>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Anfragen kannst du an die oben genannte Kontaktadresse richten.
@@ -130,8 +168,11 @@ const PrivacyPolicy: React.FC = () => {
                 8. Änderungen der Datenschutzerklärung
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Diese Datenschutzerklärung kann angepasst werden, um sie an neue rechtliche Anforderungen oder Änderungen am Bot anzupassen.<br />
-                Änderungen werden mindestens <strong>7 Tage vor Inkrafttreten</strong> angekündigt.
+                Diese Datenschutzerklärung kann angepasst werden, um sie an neue
+                rechtliche Anforderungen oder Änderungen am Bot anzupassen.
+                <br />
+                Änderungen werden mindestens{" "}
+                <strong>7 Tage vor Inkrafttreten</strong> angekündigt.
               </p>
             </section>
 
@@ -140,7 +181,8 @@ const PrivacyPolicy: React.FC = () => {
                 9. Abschaltung des Dienstes
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Sollte der Dienst eingestellt werden, werden alle gespeicherten Daten spätestens mit der Abschaltung gelöscht.
+                Sollte der Dienst eingestellt werden, werden alle gespeicherten
+                Daten spätestens mit der Abschaltung gelöscht.
               </p>
             </section>
           </div>

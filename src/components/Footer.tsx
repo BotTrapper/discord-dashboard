@@ -9,21 +9,21 @@ export default function Footer() {
     <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2">
       {/* Legal Links */}
       <div className="flex flex-wrap justify-center sm:justify-start gap-2 text-center sm:text-left">
-        <Link 
-          to="/tos" 
+        <Link
+          to="/tos"
           className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
         >
           Terms of Service
         </Link>
         <span>•</span>
-        <Link 
-          to="/dataprivacy" 
+        <Link
+          to="/dataprivacy"
           className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
         >
           Privacy Policy
         </Link>
       </div>
-      
+
       {/* Version and Copyright - stacked for sidebar */}
       <div className="text-center sm:text-left">
         <div className="hidden sm:block">Version {version}</div>
