@@ -22,6 +22,8 @@ import Settings from "./pages/Settings";
 import Permissions from "./pages/Permissions";
 import Changelog from "./pages/Changelog";
 import AdminPanel from "./pages/AdminPanel";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -39,6 +41,8 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/tos" element={<TermsOfService />} />
+            <Route path="/dataprivacy" element={<PrivacyPolicy />} />
 
             {/* Admin Panel Route */}
             <Route
