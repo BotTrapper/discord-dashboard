@@ -11,21 +11,8 @@ import {
   UserGroupIcon,
   PencilIcon,
 } from "@heroicons/react/24/outline";
-
-interface Permission {
-  id: number;
-  type: "user" | "role";
-  targetId: string;
-  targetName: string;
-  permissions: string[];
-  createdAt: string;
-  isOwner?: boolean;
-  // Extended properties from Discord API
-  avatar?: string;
-  discriminator?: string;
-  color?: number;
-  position?: number;
-}
+import type { Permission } from "../types";
+import { formatDate } from "../utils/formatters";
 
 interface AddPermissionForm {
   type: "user" | "role";
@@ -53,6 +40,7 @@ export default function Permissions() {
     permissions: ["dashboard.view"],
   });
 
+  // Extended descriptions for the Permissions page
   const availablePermissions = [
     {
       id: "dashboard.view",
@@ -265,16 +253,6 @@ export default function Permissions() {
         ? prev!.permissions.filter((p) => p !== permissionId)
         : [...prev!.permissions, permissionId],
     }));
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("de-DE", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   if (loading) {

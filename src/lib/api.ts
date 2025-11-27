@@ -26,8 +26,9 @@ export interface TicketCategory {
 
 import axios from "axios";
 import type { AxiosInstance, AxiosResponse } from "axios";
+import { API_BASE_URL } from "../config/constants";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const isDev = import.meta.env.DEV;
 
 class ApiService {
   private axiosInstance: AxiosInstance;
@@ -51,13 +52,17 @@ class ApiService {
         if (token) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${token}`;
-          console.log(
-            `🔑 Adding Authorization header to ${config.method?.toUpperCase()} ${config.url}`,
-          );
+          if (isDev) {
+            console.log(
+              `🔑 Adding Authorization header to ${config.method?.toUpperCase()} ${config.url}`,
+            );
+          }
         } else {
-          console.log(
-            `❌ No token found in localStorage for ${config.method?.toUpperCase()} ${config.url}`,
-          );
+          if (isDev) {
+            console.log(
+              `❌ No token found in localStorage for ${config.method?.toUpperCase()} ${config.url}`,
+            );
+          }
         }
 
         // Add admin session token if available
@@ -70,7 +75,9 @@ class ApiService {
           if (adminSessionToken) {
             config.headers = config.headers || {};
             config.headers["x-admin-session"] = adminSessionToken;
-            console.log(`🔑 Using admin session token for guild ${guildId}`);
+            if (isDev) {
+              console.log(`🔑 Using admin session token for guild ${guildId}`);
+            }
           }
         }
 
@@ -217,7 +224,9 @@ class ApiService {
       `admin-session-${guildId}`,
       response.data.sessionToken,
     );
-    console.log(`🔑 Generated admin session for guild ${guildId}`);
+    if (isDev) {
+      console.log(`🔑 Generated admin session for guild ${guildId}`);
+    }
 
     return response.data;
   }
@@ -252,10 +261,12 @@ class ApiService {
 
       return response.data;
     } catch (error) {
-      console.warn(
-        `❌ Admin session validation failed for guild ${guildId}:`,
-        error,
-      );
+      if (isDev) {
+        console.warn(
+          `❌ Admin session validation failed for guild ${guildId}:`,
+          error,
+        );
+      }
       localStorage.removeItem(`admin-session-${guildId}`);
       return { valid: false };
     }
@@ -263,7 +274,9 @@ class ApiService {
 
   clearAdminSession(guildId: string): void {
     localStorage.removeItem(`admin-session-${guildId}`);
-    console.log(`🗑️ Cleared admin session for guild ${guildId}`);
+    if (isDev) {
+      console.log(`🗑️ Cleared admin session for guild ${guildId}`);
+    }
   }
 
   // Check if user has admin session for guild
