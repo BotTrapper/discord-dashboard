@@ -21,7 +21,7 @@ import CommandPermissions from "./pages/CommandPermissions";
 import Settings from "./pages/Settings";
 import Permissions from "./pages/Permissions";
 import Changelog from "./pages/Changelog";
-import AdminPanel from "./pages/AdminPanel";
+import AdminPanel from "./pages/admin/AdminPanel";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 
