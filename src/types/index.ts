@@ -98,6 +98,29 @@ export interface Feature {
   enabled: boolean;
 }
 
+// Notification Types
+export interface NotificationSettings {
+  guildId: string;
+  enabled: boolean;
+  channelId: string | null;
+  events: NotificationEvent[];
+  webhookUrl: string | null;
+  mentionRoles: string[];
+  mentionUsers: string[];
+}
+
+export interface NotificationEvent {
+  type: string;
+  enabled: boolean;
+  customMessage: string | null;
+}
+
+export interface NotificationTestResult {
+  success: boolean;
+  message: string;
+  timestamp: string;
+}
+
 // API Response Types
 export interface ApiResponse<T> {
   success: boolean;
