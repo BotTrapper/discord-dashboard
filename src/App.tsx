@@ -22,6 +22,7 @@ import Settings from "./pages/Settings";
 import Permissions from "./pages/Permissions";
 import Changelog from "./pages/Changelog";
 import AdminPanel from "./pages/admin/AdminPanel";
+import NotificationSettings from "./pages/NotificationSettings";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 
@@ -92,6 +93,7 @@ function App() {
               />
               <Route path="settings" element={<Settings />} />
               <Route path="permissions" element={<Permissions />} />
+              <Route path="notifications" element={<NotificationSettings />} />
               <Route path="changelog" element={<Changelog />} />
             </Route>
 

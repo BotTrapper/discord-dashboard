@@ -19,6 +19,7 @@ import {
   DocumentTextIcon,
   RectangleGroupIcon,
   UserGroupIcon,
+  BellIcon,
 } from "@heroicons/react/24/outline";
 
 const navigation = [
@@ -44,6 +45,7 @@ const navigation = [
     href: "command-permissions",
     icon: KeyIcon,
   },
+  { name: "Benachrichtigungen", href: "notifications", icon: BellIcon },
   { name: "Statistics", href: "statistics", icon: ChartBarIcon },
   { name: "Berechtigungen", href: "permissions", icon: KeyIcon },
   { name: "Changelog", href: "changelog", icon: DocumentTextIcon },
