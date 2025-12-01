@@ -172,7 +172,10 @@ export default function NotificationSettings() {
 
   const handleChannelChange = (channelId: string) => {
     if (settings) {
-      setSettings({ ...settings, channelId: channelId || null });
+      setSettings({
+        ...settings,
+        channelId: channelId.trim() === "" ? null : channelId,
+      });
     }
   };
 
